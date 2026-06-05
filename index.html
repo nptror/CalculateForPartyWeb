@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PartyCalc - Cam-pu-chia Tiền Tiệc</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS Variables & Lacquer Gold Theme Setup (Chất liệu Việt Nam) */
+    :root {
+      --bg-main: #0a060b;
+      --bg-gradient: radial-gradient(circle at 50% 50%, #170d14 0%, #050305 100%);
+      
+      /* Glassmorphism translucent panels with gold-bronze borders */
+      --card-bg: rgba(22, 15, 24, 0.45);
+      --card-border: rgba(217, 119, 6, 0.12);
+      --card-hover-border: rgba(217, 119, 6, 0.28);
+      --card-selected-bg: rgba(217, 119, 6, 0.07);
+      --card-selected-border: rgba(217, 119, 6, 0.45);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      
+      /* Primary Dong Son Gold */
+      --primary: #d97706;
+      --primary-rgb: 217, 119, 6;
+      --primary-hover: #b45309;
+      --primary-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #92400e 100%);
+      
+      /* Jade Green (Ngọc Bích) */
+      --emerald: #059669;
+      --emerald-rgb: 5, 150, 105;
+      --emerald-gradient: linear-gradient(135deg, #34d399 0%, #059669 100%);
+      
+      /* Lotus Red-Pink (Hồng Cánh Sen) */
+      --rose: #e11d48;
+      --rose-rgb: 225, 29, 72;
+      --rose-gradient: linear-gradient(135deg, #f43f5e 0%, #be185d 100%);
+      
+      /* Amber Gold */
+      --amber: #f59e0b;
+      --amber-rgb: 245, 158, 11;
+      --amber-gradient: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+      
+      --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* Reset Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      background-image: var(--bg-gradient);
+      color: var(--text-primary);
+      font-family: var(--font);
+      min-height: 100vh;
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+      padding-bottom: 4rem;
+    }
+
+    /* Decorative Glowing Blobs (Sơn mài ấm áp) */
+    body::before, body::after {
+      content: '';
+      position: absolute;
+      width: 40vw;
+      height: 40vw;
+      border-radius: 50%;
+      filter: blur(140px);
+      z-index: -2;
+      opacity: 0.1;
+      pointer-events: none;
+    }
+    body::before {
+      top: -10%;
+      left: -10%;
+      background: var(--primary);
+    }
+    body::after {
+      bottom: 15%;
+      right: -10%;
+      background: #be185d; /* Lotus red */
+    }
+
+    /* Dong Son Drum Watermark background (Chất liệu Việt Nam) */
+    .dongson-drum-bg {
+      position: fixed;
+      top: 10%;
+      right: -180px;
+      width: 550px;
+      height: 550px;
+      color: var(--primary);
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: -1;
+      transform: rotate(20deg);
+    }
+    
+    .dongson-drum-bg-left {
+      position: fixed;
+      bottom: 5%;
+      left: -220px;
+      width: 650px;
+      height: 650px;
+      color: var(--primary);
+      opacity: 0.02;
+      pointer-events: none;
+      z-index: -1;
+      transform: rotate(-25deg);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(217, 119, 6, 0.2);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(217, 119, 6, 0.4);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      border-bottom: 1px solid rgba(217, 119, 6, 0.15);
+      padding-bottom: 1.5rem;
+    }
+
+    .brand-section h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 40%, #fbbf24 80%, #d97706 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-section p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    .global-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    /* Buttons Style */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: var(--transition-base);
+      user-select: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #0b0600;
+      box-shadow: 0 4px 15px rgba(217, 119, 6, 0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
+      filter: brightness(1.1);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--card-border);
+      color: var(--text-primary);
+    }
+    .btn-secondary:hover {
+      background: rgba(217, 119, 6, 0.08);
+      border-color: var(--card-hover-border);
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: rgba(225, 29, 72, 0.1);
+      border: 1px solid rgba(225, 29, 72, 0.2);
+      color: #fda4af;
+    }
+    .btn-danger:hover {
+      background: rgba(225, 29, 72, 0.2);
+      border-color: rgba(225, 29, 72, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background: rgba(5, 150, 105, 0.15);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+      color: #6ee7b7;
+    }
+    .btn-success:hover {
+      background: rgba(5, 150, 105, 0.25);
+      border-color: rgba(5, 150, 105, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+
+    /* Glass Card Style */
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      transition: var(--transition-base);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    .glass-card:hover {
+      border-color: var(--card-hover-border);
+    }
+
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--card-accent, var(--primary));
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(217, 119, 6, 0.15);
+      color: var(--card-accent, var(--primary));
+    }
+
+    .stat-info {
+      flex: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.75px;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+    }
+
+    /* Main Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 992px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    /* Section Title */
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-primary);
+      border-bottom: 1px solid rgba(217, 119, 6, 0.15);
+      padding-bottom: 0.75rem;
+    }
+
+    .card-title span.count-badge {
+      font-size: 0.72rem;
+      background: rgba(217, 119, 6, 0.15);
+      color: var(--amber);
+      padding: 0.25rem 0.6rem;
+      border-radius: 99px;
+      font-weight: 700;
+      border: 1px solid rgba(217, 119, 6, 0.2);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .form-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(217, 119, 6, 0.15);
+      border-radius: 12px;
+      padding: 0.7rem 1rem;
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 0.92rem;
+      transition: var(--transition-base);
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--amber);
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    /* Quick Presets styling (Frictionless UX) */
+    .quick-presets-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .quick-presets-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    
+    .quick-presets-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.75px;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .quick-presets-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .preset-chip {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(217, 119, 6, 0.15);
+      color: var(--text-secondary);
+      padding: 0.25rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-base);
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .preset-chip:hover {
+      background: rgba(217, 119, 6, 0.12);
+      border-color: rgba(217, 119, 6, 0.45);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+
+    .preset-chip:active {
+      transform: translateY(0);
+    }
+
+    .preset-chip.danger-preset {
+      color: #fca5a5;
+      border-color: rgba(225, 29, 72, 0.25);
+    }
+    .preset-chip.danger-preset:hover {
+      background: rgba(225, 29, 72, 0.15);
+      border-color: rgba(225, 29, 72, 0.5);
+    }
+
+    /* Member List Management */
+    .member-manager-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .member-list-wrapper {
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 1rem;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+    
+    .member-item:hover {
+      background: rgba(217, 119, 6, 0.04);
+      border-color: rgba(217, 119, 6, 0.15);
+    }
+
+    .member-item.selected {
+      background: var(--card-selected-bg);
+      border-color: var(--card-selected-border);
+      box-shadow: 0 0 15px rgba(217, 119, 6, 0.06);
+    }
+
+    .member-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .member-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      color: #0c080d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .member-name-text {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .member-spent-badge {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      font-family: monospace;
+      margin-top: 0.1rem;
+      display: inline-block;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .member-actions {
+      display: flex;
+      gap: 0.3rem;
+      opacity: 0.4;
+      transition: var(--transition-base);
+    }
+
+    .member-item:hover .member-actions,
+    .member-item.selected .member-actions {
+      opacity: 1;
+    }
+
+    .action-btn-mini {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 6px;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .action-btn-mini:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .action-btn-mini.delete-btn:hover {
+      color: #fca5a5;
+      background: rgba(225, 29, 72, 0.15);
+    }
+
+    /* Selected Member Expenses Management Card */
+    .expenses-section {
+      margin-top: 1rem;
+    }
+
+    .no-member-selected-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      border: 2px dashed rgba(217, 119, 6, 0.15);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.005);
+    }
+
+    .no-member-selected-placeholder svg {
+      width: 44px;
+      height: 44px;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    .expense-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 240px;
+      overflow-y: auto;
+      margin-bottom: 1.25rem;
+      padding-right: 0.25rem;
+    }
+
+    .expense-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 0.9rem;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.02);
+      transition: var(--transition-base);
+    }
+    .expense-item:hover {
+      background: rgba(217, 119, 6, 0.03);
+      border-color: rgba(217, 119, 6, 0.1);
+    }
+
+    .expense-item-name {
+      font-weight: 500;
+      font-size: 0.88rem;
+    }
+
+    .expense-item-val {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .expense-amount-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-family: monospace;
+      font-size: 0.88rem;
+    }
+
+    /* Live Dashboard Results List */
+    .dashboard-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .dashboard-sub-section {
+      border-bottom: 1px solid rgba(217, 119, 6, 0.12);
+      padding-bottom: 1.25rem;
+    }
+    .dashboard-sub-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .sub-section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Progress bars of relative spending */
+    .progress-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .progress-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .progress-member-name {
+      color: var(--text-primary);
+    }
+
+    .progress-amount-info {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+    }
+
+    .progress-bar-container {
+      height: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 99px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.02);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--primary-gradient);
+      width: 0%;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dashed marker for Average on progress bars */
+    .progress-bar-container::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--avg-percentage, 0%);
+      width: 2px;
+      background-image: linear-gradient(to bottom, transparent 30%, rgba(255, 255, 255, 0.5) 30%, rgba(255, 255, 255, 0.5) 70%, transparent 70%);
+      background-size: 1px 8px;
+      z-index: 5;
+      pointer-events: none;
+      display: var(--display-avg-line, block);
+    }
+
+    /* Split groups - Receivers / Payers lists */
+    .split-groups-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .split-groups-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .split-box {
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .split-box.receiver-box {
+      background: rgba(5, 150, 105, 0.04);
+      border-color: rgba(5, 150, 105, 0.15);
+    }
+
+    .split-box.payer-box {
+      background: rgba(225, 29, 72, 0.04);
+      border-color: rgba(225, 29, 72, 0.15);
+    }
+
+    .split-box-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.75px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .receiver-box .split-box-title {
+      color: #34d399;
+    }
+
+    .payer-box .split-box-title {
+      color: #fca5a5;
+    }
+
+    .split-box-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 240px;
+      overflow-y: auto;
+      font-size: 0.82rem;
+    }
+
+    .split-box-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .split-box-item .name {
+      font-weight: 600;
+    }
+
+    .split-box-item .val {
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    .receiver-box .split-box-item .val {
+      color: #34d399;
+    }
+
+    .payer-box .split-box-item .val {
+      color: #f87171;
+    }
+
+    .no-records-msg {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 0.78rem;
+      padding: 0.5rem 0;
+      text-align: center;
+    }
+
+    /* Footer and Export Buttons styling */
+    .export-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Modal dialog styling for Edits */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: #110913;
+      border: 1px solid var(--card-border);
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+      transform: scale(0.92);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+      border-bottom: 1px solid rgba(217, 119, 6, 0.15);
+      padding-bottom: 0.5rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Toast Notification system */
+    .toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: rgba(18, 10, 20, 0.96);
+      border: 1px solid rgba(217, 119, 6, 0.25);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      color: var(--text-primary);
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transform: translateX(120%);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+      pointer-events: auto;
+    }
+
+    .toast.active {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast-success {
+      border-left: 4px solid var(--emerald);
+    }
+    .toast-success svg {
+      color: #34d399;
+    }
+
+    .toast-info {
+      border-left: 4px solid var(--primary);
+    }
+    .toast-info svg {
+      color: var(--amber);
+    }
+
+    /* SVG Icons style helpers */
+    .icon {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon-sm {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .lotus-logo {
+      color: #fbbf24;
+      filter: drop-shadow(0 2px 5px rgba(217,119,6,0.3));
+    }
+
+    /* Helper styles */
+    .text-emerald {
+      color: #34d399;
+    }
+    .text-rose {
+      color: #fb7185;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Vietnam Dong Son Bronze Drum Watermarks -->
+  <svg class="dongson-drum-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" stroke-width="0.3"/>
+    <circle cx="100" cy="100" r="85" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,2"/>
+    <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" stroke-width="0.3"/>
+    <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="0.5"/>
+    <circle cx="100" cy="100" r="45" fill="none" stroke="currentColor" stroke-width="0.3"/>
+    <circle cx="100" cy="100" r="30" fill="none" stroke="currentColor" stroke-width="0.4"/>
+    <polygon points="100,68 103,84 116,74 109,89 124,87 112,96 128,100 112,104 124,113 109,111 116,126 103,116 100,132 97,116 84,126 91,111 76,113 88,104 72,100 88,96 76,87 91,89 84,74 97,84" fill="currentColor"/>
+    <path d="M 100 12 L 100 28 M 100 172 L 100 188 M 12 100 L 28 100 M 172 100 L 188 100" stroke="currentColor" stroke-width="0.3"/>
+    <g transform="rotate(15 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(45 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(75 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(105 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(135 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(165 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(195 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(225 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(255 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(285 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(315 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+    <g transform="rotate(345 100 100)"><path d="M 100 20 L 96 23 L 100 21 L 104 23 Z" fill="currentColor"/></g>
+  </svg>
+
+  <svg class="dongson-drum-bg-left" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="95" fill="none" stroke="currentColor" stroke-width="0.2"/>
+    <circle cx="100" cy="100" r="75" fill="none" stroke="currentColor" stroke-width="0.3"/>
+    <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="0.2"/>
+    <polygon points="100,68 103,84 116,74 109,89 124,87 112,96 128,100 112,104 124,113 109,111 116,126 103,116 100,132 97,116 84,126 91,111 76,113 88,104 72,100 88,96 76,87 91,89 84,74 97,84" fill="currentColor"/>
+  </svg>
+
+  <div class="container">
+    
+    <!-- Header Page -->
+    <header>
+      <div class="brand-section">
+        <h1>
+          <!-- Stylized Gold Lotus SVG Logo -->
+          <svg class="icon lotus-logo" style="width:36px;height:36px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12,21 C12,21 6,16 6,11 C6,7 12,3 12,3 C12,3 18,7 18,11 C18,16 12,21 12,21 Z" />
+            <path d="M12,21 C12,21 4,18 4,12 C4,8 10,6 10,6" />
+            <path d="M12,21 C12,21 20,18 20,12 C20,8 14,6 14,6" />
+            <path d="M12,21 Q12,17 9,15 C9,15 7,12 8,9 C9,6 12,8 12,8" />
+            <path d="M12,21 Q12,17 15,15 C15,15 17,12 16,9 C15,6 12,8 12,8" />
+            <circle cx="12" cy="18" r="1" fill="currentColor" />
+          </svg>
+          PartyCalc
+        </h1>
+        <p>Cam-pu-chia tiền tiệc: Chia đều thiệt hại - Vui vẻ cả hội 🍻</p>
+      </div>
+      <div class="global-actions">
+        <button id="btnMockData" class="btn btn-secondary" onclick="loadMockData()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Mâm cỗ mẫu
+        </button>
+        <button id="btnReset" class="btn btn-danger" onclick="resetAllDataConfirm()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+          Dọn bàn
+        </button>
+      </div>
+    </header>
+
+    <!-- Stats Dashboard Row -->
+    <div class="stats-grid">
+      <!-- Total Cost Card -->
+      <div class="glass-card stat-card" style="--card-accent: var(--primary)">
+        <div class="stat-icon">
+          <svg class="icon" viewBox="0 0 24 24">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Tổng thiệt hại</div>
+          <div id="statTotalCost" class="stat-value">0 đ</div>
+        </div>
+      </div>
+
+      <!-- Average Cost Card -->
+      <div class="glass-card stat-card" style="--card-accent: var(--emerald)">
+        <div class="stat-icon">
+          <svg class="icon" viewBox="0 0 24 24">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Mỗi người quyên góp</div>
+          <div id="statAvgCost" class="stat-value">0 đ</div>
+        </div>
+      </div>
+
+      <!-- Total Members Card -->
+      <div class="glass-card stat-card" style="--card-accent: var(--amber)">
+        <div class="stat-icon">
+          <svg class="icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Sĩ số đồng bọn</div>
+          <div id="statTotalMembers" class="stat-value">0 người</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid Layout -->
+    <div class="main-grid">
+      
+      <!-- Left Column: Member & Expense Management -->
+      <div class="glass-card" style="display:flex; flex-direction:column; gap: 1.25rem;">
+        
+        <!-- Member Management Panel -->
+        <div class="member-manager-section">
+          <div class="card-title">
+            <span>Hội ăn nhậu (Đồng bọn)</span>
+            <span class="count-badge" id="lblMemberCount">0</span>
+          </div>
+
+          <!-- Add Member Input Row -->
+          <div class="form-row">
+            <div class="input-wrapper">
+              <input type="text" id="txtNewMemberName" class="form-input" placeholder="Nhập tên đồng bọn..." onkeydown="if(event.key === 'Enter') addMember()">
+            </div>
+            <button class="btn btn-primary" onclick="addMember()">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Thêm
+            </button>
+          </div>
+
+          <!-- Quick Presets for Members (Frictionless UX) -->
+          <div class="quick-presets-wrapper" style="margin-top: -0.25rem;">
+            <div class="quick-presets-group">
+              <div class="quick-presets-label">
+                <svg class="icon icon-sm" viewBox="0 0 24 24" style="stroke: var(--primary)"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Thêm nhanh tên thường gặp:
+              </div>
+              <div class="quick-presets-row" id="memberPresetsContainer">
+                <!-- Preset name buttons generated here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Member List Scrollbox -->
+          <div class="member-list-wrapper" id="memberListContainer">
+            <!-- Member items render here -->
+          </div>
+        </div>
+
+        <!-- Expense Management Panel -->
+        <div class="expenses-section" id="expenseSectionWrapper">
+          <!-- Populated dynamically by JS -->
+          <div class="no-member-selected-placeholder">
+            <svg class="icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4M12 16h.01"/>
+            </svg>
+            <p>Chọn một đồng bọn bên trên để quản lý các món đã chi</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Live Results & Sharing -->
+      <div style="display:flex; flex-direction:column; gap:1.5rem;">
+        
+        <!-- Live Dashboard Split Card -->
+        <div class="glass-card dashboard-card">
+          <div class="card-title">
+            <span>Phân chia quỹ tiệc</span>
+            <span class="count-badge" style="background: rgba(239, 68, 68, 0.1); color: #fca5a5; border-color: rgba(239, 68, 68, 0.2)">Tự động</span>
+          </div>
+
+          <!-- Progress List: Contributed vs Average -->
+          <div class="dashboard-sub-section">
+            <div class="sub-section-title">
+              <span>Mức chi tiêu so với Trung bình</span>
+              <span style="font-size:0.75rem; color:var(--text-muted)">Nét đứt (---) là trung bình</span>
+            </div>
+            <div class="progress-list" id="progressBarsContainer">
+              <!-- Progress bars render here -->
+            </div>
+          </div>
+
+          <!-- Payment Receivers & Payers Split boxes -->
+          <div class="dashboard-sub-section">
+            <div class="split-groups-grid">
+              
+              <!-- Receivers Box -->
+              <div class="split-box receiver-box">
+                <div class="split-box-title">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  Nhận Lại Tiền
+                </div>
+                <div class="split-box-list" id="receiversListContainer">
+                  <!-- Receivers render here -->
+                </div>
+              </div>
+
+              <!-- Payers Box -->
+              <div class="split-box payer-box">
+                <div class="split-box-title">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+                  Cần Quyên Góp
+                </div>
+                <div class="split-box-list" id="payersListContainer">
+                  <!-- Payers render here -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Export & Share Control Panel -->
+        <div class="glass-card" style="padding:1.25rem;">
+          <div style="margin-bottom:1rem; font-size:0.92rem; font-weight:700; color:var(--text-secondary)">Báo cáo & Chia sẻ</div>
+          <div class="export-actions">
+            <button class="btn btn-secondary" onclick="copyReportToClipboard()">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy bảng kê
+            </button>
+            <button class="btn btn-primary" onclick="exportReportAsImage()">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Tải ảnh sớ nợ
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Modal Edit Dialog -->
+  <div class="modal-overlay" id="editModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header" id="modalEditTitle">Chỉnh sửa</div>
+      <div class="form-group">
+        <label style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; display:block;" id="lblModalInput">Tên</label>
+        <input type="text" id="txtModalInputText" class="form-input" placeholder="">
+        <!-- For editing numbers like expense prices -->
+        <input type="text" id="txtModalInputAmount" class="form-input" placeholder="Số tiền" style="margin-top:0.75rem; display:none;">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary btn-sm" onclick="closeEditModal()">Hủy</button>
+        <button class="btn btn-primary btn-sm" id="btnModalConfirm">Lưu lại</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Message container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Javascript Logic -->
+  <script>
+    // State management
+    let state = {
+      members: [],
+      selectedMemberId: null
+    };
+
+    // Default list of initial members
+    const DEFAULT_MEMBERS = ["Thư", "An", "Thịnh", "Phong", "Huy", "Khoa", "Pi"];
+
+    // Pool of popular Vietnamese names for quick presets (Frictionless Member Add)
+    const PRESET_NAMES = ["An", "Bình", "Cường", "Dũng", "Giang", "Hương", "Khánh", "Linh", "Minh", "Nam", "Phúc", "Quỳnh", "Sơn", "Thảo", "Trang", "Tuấn", "Vy", "Yến", "Thư", "Thịnh", "Phong", "Huy", "Khoa", "Pi"];
+
+    // Popular Vietnamese party items (Frictionless Expense Add)
+    const PRESET_EXPENSES = [
+      { label: "Bia 🍻", value: "Bia" },
+      { label: "Mồi nhậu 🍖", value: "Mồi nhậu" },
+      { label: "Lẩu 🍲", value: "Lẩu" },
+      { label: "Nước ngọt 🥤", value: "Nước ngọt" },
+      { label: "Trái cây 🍉", value: "Trái cây" },
+      { label: "Đá viên ❄️", value: "Đá viên" },
+      { label: "Khăn lạnh 🧊", value: "Khăn lạnh" },
+      { label: "Taxi / Grab 🚗", value: "Taxi / Grab" }
+    ];
+
+    // Initialize application
+    window.addEventListener('DOMContentLoaded', () => {
+      loadDataFromStorage();
+      if (state.members.length === 0) {
+        setupDefaultState();
+      }
+      render();
+    });
+
+    // Setup empty members default state
+    function setupDefaultState() {
+      state.members = DEFAULT_MEMBERS.map((name, index) => ({
+        id: 'member_' + Date.now() + '_' + index,
+        name: name,
+        expenses: []
+      }));
+      state.selectedMemberId = state.members[0].id;
+      saveDataToStorage();
+    }
+
+    // Storage utilities
+    function loadDataFromStorage() {
+      try {
+        const stored = localStorage.getItem('calculate_for_party_data');
+        if (stored) {
+          state = JSON.parse(stored);
+        }
+      } catch (err) {
+        console.error('Error loading data from localStorage', err);
+      }
+    }
+
+    // Canvas round rectangle utility helper for compatibility
+    function drawRoundRect(c, x, y, w, h, r, fill = true, stroke = false) {
+      if (r > w / 2) r = w / 2;
+      if (r > h / 2) r = h / 2;
+      c.beginPath();
+      c.moveTo(x + r, y);
+      c.lineTo(x + w - r, y);
+      c.quadraticCurveTo(x + w, y, x + w, y + r);
+      c.lineTo(x + w, y + h - r);
+      c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      c.lineTo(x + r, y + h);
+      c.quadraticCurveTo(x, y + h, x, y + h - r);
+      c.lineTo(x, y + r);
+      c.quadraticCurveTo(x, y, x + r, y);
+      c.closePath();
+      if (fill) c.fill();
+      if (stroke) c.stroke();
+    }
+
+    function saveDataToStorage() {
+      try {
+        localStorage.setItem('calculate_for_party_data', JSON.stringify(state));
+      } catch (err) {
+        console.error('Error saving data to localStorage', err);
+      }
+    }
+
+    // Mock Data Generator
+    function loadMockData() {
+      const timestamp = Date.now();
+      state.members = [
+        {
+          id: 'member_' + timestamp + '_0',
+          name: 'Thư',
+          expenses: [
+            { id: 'exp_' + timestamp + '_1', name: 'Bia Sài Gòn', amount: 450000 },
+            { id: 'exp_' + timestamp + '_2', name: 'Đá viên + Khăn', amount: 50000 }
+          ]
+        },
+        {
+          id: 'member_' + timestamp + '_3',
+          name: 'An',
+          expenses: [
+            { id: 'exp_' + timestamp + '_4', name: 'Thịt nướng các loại', amount: 650000 },
+            { id: 'exp_' + timestamp + '_5', name: 'Nước ngọt', amount: 120000 }
+          ]
+        },
+        {
+          id: 'member_' + timestamp + '_6',
+          name: 'Thịnh',
+          expenses: [
+            { id: 'exp_' + timestamp + '_7', name: 'Lẩu thái thập cẩm', amount: 480000 }
+          ]
+        },
+        {
+          id: 'member_' + timestamp + '_8',
+          name: 'Phong',
+          expenses: [
+            { id: 'exp_' + timestamp + '_9', name: 'Bánh tráng trộn', amount: 100000 }
+          ]
+        },
+        {
+          id: 'member_' + timestamp + '_10',
+          name: 'Huy',
+          expenses: []
+        },
+        {
+          id: 'member_' + timestamp + '_11',
+          name: 'Khoa',
+          expenses: []
+        },
+        {
+          id: 'member_' + timestamp + '_12',
+          name: 'Pi',
+          expenses: [
+            { id: 'exp_' + timestamp + '_13', name: 'Taxi đưa đón', amount: 200000 }
+          ]
+        }
+      ];
+      state.selectedMemberId = state.members[0].id;
+      saveDataToStorage();
+      render();
+      showToast('Đã dọn lên mâm cỗ mẫu thành công!', 'success');
+    }
+
+    // Reset everything
+    function resetAllDataConfirm() {
+      if (confirm('Bạn có chắc chắn muốn làm mới toàn bộ dữ liệu? Mọi khoản chi đã nhập sẽ bị xóa sạch.')) {
+        setupDefaultState();
+        render();
+        showToast('Đã khôi phục danh sách thành viên mặc định.', 'info');
+      }
+    }
+
+    // Formatting money
+    function formatMoney(val) {
+      return new Intl.NumberFormat('vi-VN', { style: 'decimal' }).format(val) + ' đ';
+    }
+
+    // Helper to format currency values as they type in inputs
+    function formatCurrencyInput(inputElement) {
+      inputElement.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value) {
+          e.target.value = parseInt(value, 10).toLocaleString('vi-VN');
+        } else {
+          e.target.value = '';
+        }
+      });
+    }
+
+    // Add Member With Name Directly
+    function addMemberWithName(name) {
+      const duplicate = state.members.find(m => m.name.toLowerCase() === name.toLowerCase());
+      if (duplicate) {
+        showToast('Tên thành viên đã tồn tại!', 'info');
+        return;
+      }
+
+      const newId = 'member_' + Date.now();
+      state.members.push({
+        id: newId,
+        name: name,
+        expenses: []
+      });
+      state.selectedMemberId = newId;
+      saveDataToStorage();
+      render();
+      showToast(`Đã thêm đồng bọn "${name}"`, 'success');
+    }
+
+    // Add Member via input
+    function addMember() {
+      const input = document.getElementById('txtNewMemberName');
+      const name = input.value.trim();
+      if (!name) {
+        showToast('Vui lòng nhập tên thành viên!', 'info');
+        return;
+      }
+      addMemberWithName(name);
+      input.value = '';
+      input.focus(); // keep focus to easily type next member
+    }
+
+    // Render Quick Member Preset Chips
+    function renderMemberPresets() {
+      const container = document.getElementById('memberPresetsContainer');
+      if (!container) return;
+
+      const currentNames = new Set(state.members.map(m => m.name.toLowerCase()));
+      const available = PRESET_NAMES.filter(name => !currentNames.has(name.toLowerCase()));
+      
+      container.innerHTML = '';
+      if (available.length === 0) {
+        container.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">Đã dùng hết presets</span>`;
+        return;
+      }
+
+      available.slice(0, 6).forEach(name => {
+        const btn = document.createElement('button');
+        btn.className = 'preset-chip';
+        btn.innerHTML = `+ ${name}`;
+        btn.onclick = () => addMemberWithName(name);
+        container.appendChild(btn);
+      });
+    }
+
+    // Edit Member Name
+    function openEditMemberModal(id, currentName) {
+      const modalOverlay = document.getElementById('editModalOverlay');
+      const modalTitle = document.getElementById('modalEditTitle');
+      const label = document.getElementById('lblModalInput');
+      const textInput = document.getElementById('txtModalInputText');
+      const amtInput = document.getElementById('txtModalInputAmount');
+      const btnConfirm = document.getElementById('btnModalConfirm');
+
+      modalTitle.innerText = "Sửa tên đồng bọn";
+      label.innerText = "Tên đồng bọn";
+      textInput.value = currentName;
+      textInput.style.display = "block";
+      amtInput.style.display = "none";
+      
+      modalOverlay.classList.add('active');
+      textInput.focus();
+
+      btnConfirm.onclick = () => {
+        const newName = textInput.value.trim();
+        if (!newName) {
+          showToast('Tên không được để trống!', 'info');
+          return;
+        }
+        
+        const duplicate = state.members.find(m => m.id !== id && m.name.toLowerCase() === newName.toLowerCase());
+        if (duplicate) {
+          showToast('Tên thành viên đã tồn tại!', 'info');
+          return;
+        }
+
+        const member = state.members.find(m => m.id === id);
+        if (member) {
+          const oldName = member.name;
+          member.name = newName;
+          saveDataToStorage();
+          render();
+          showToast(`Đã đổi tên từ "${oldName}" sang "${newName}"`, 'success');
+        }
+        closeEditModal();
+      };
+    }
+
+    // Delete Member
+    function deleteMember(id, event) {
+      if (event) event.stopPropagation();
+      const member = state.members.find(m => m.id === id);
+      if (!member) return;
+
+      if (confirm(`Bạn có chắc chắn muốn xóa "${member.name}" cùng tất cả các khoản đã chi?`)) {
+        state.members = state.members.filter(m => m.id !== id);
+        if (state.selectedMemberId === id) {
+          state.selectedMemberId = state.members.length > 0 ? state.members[0].id : null;
+        }
+        saveDataToStorage();
+        render();
+        showToast(`Đã tiễn biệt "${member.name}" khỏi danh sách`, 'info');
+      }
+    }
+
+    // Quick Expense Suggestion selection
+    function selectExpenseTag(tagName) {
+      const txtName = document.getElementById('txtExpenseName');
+      if (txtName) {
+        txtName.value = tagName;
+        document.getElementById('txtExpenseAmount').focus();
+      }
+    }
+
+    // Quick Amount Additions
+    function incrementAmount(value) {
+      const input = document.getElementById('txtExpenseAmount');
+      if (!input) return;
+      let currentVal = parseInt(input.value.replace(/\D/g, ''), 10) || 0;
+      currentVal += value;
+      input.value = currentVal.toLocaleString('vi-VN');
+    }
+
+    function clearAmountInput() {
+      const input = document.getElementById('txtExpenseAmount');
+      if (input) input.value = '';
+    }
+
+    // Render Quick Expense presets list
+    function renderExpensePresets() {
+      const container = document.getElementById('expenseTagsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      
+      PRESET_EXPENSES.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'preset-chip';
+        btn.innerText = item.label;
+        btn.onclick = () => selectExpenseTag(item.value);
+        container.appendChild(btn);
+      });
+    }
+
+    // Add Expense item to selected member
+    function addExpense() {
+      if (!state.selectedMemberId) return;
+
+      const txtName = document.getElementById('txtExpenseName');
+      const txtAmount = document.getElementById('txtExpenseAmount');
+
+      const name = txtName.value.trim();
+      const amountVal = txtAmount.value.replace(/\D/g, '');
+      const amount = parseInt(amountVal, 10) || 0;
+
+      if (!name) {
+        showToast('Vui lòng nhập tên khoản chi!', 'info');
+        txtName.focus();
+        return;
+      }
+      if (amount <= 0) {
+        showToast('Số tiền chi tiêu phải lớn hơn 0!', 'info');
+        txtAmount.focus();
+        return;
+      }
+
+      const member = state.members.find(m => m.id === state.selectedMemberId);
+      if (member) {
+        member.expenses.push({
+          id: 'exp_' + Date.now(),
+          name: name,
+          amount: amount
+        });
+        
+        txtName.value = '';
+        txtAmount.value = '';
+        saveDataToStorage();
+        render();
+        
+        // Return focus to expense name for frictionless multi-adding
+        txtName.focus();
+        showToast(`Đã thêm khoản chi "${name}"`, 'success');
+      }
+    }
+
+    // Edit Expense Item
+    function openEditExpenseModal(memberId, expId, currentName, currentAmount) {
+      const modalOverlay = document.getElementById('editModalOverlay');
+      const modalTitle = document.getElementById('modalEditTitle');
+      const label = document.getElementById('lblModalInput');
+      const textInput = document.getElementById('txtModalInputText');
+      const amtInput = document.getElementById('txtModalInputAmount');
+      const btnConfirm = document.getElementById('btnModalConfirm');
+
+      modalTitle.innerText = "Sửa chi tiết";
+      label.innerText = "Thông tin khoản chi";
+      
+      textInput.value = currentName;
+      textInput.style.display = "block";
+      
+      amtInput.value = currentAmount.toLocaleString('vi-VN');
+      amtInput.style.display = "block";
+      amtInput.oninput = (e) => {
+        let val = e.target.value.replace(/\D/g, '');
+        e.target.value = val ? parseInt(val, 10).toLocaleString('vi-VN') : '';
+      };
+
+      modalOverlay.classList.add('active');
+      textInput.focus();
+
+      btnConfirm.onclick = () => {
+        const newName = textInput.value.trim();
+        const amtVal = amtInput.value.replace(/\D/g, '');
+        const newAmount = parseInt(amtVal, 10) || 0;
+
+        if (!newName) {
+          showToast('Vui lòng nhập tên khoản chi!', 'info');
+          return;
+        }
+        if (newAmount <= 0) {
+          showToast('Số tiền phải lớn hơn 0!', 'info');
+          return;
+        }
+
+        const member = state.members.find(m => m.id === memberId);
+        if (member) {
+          const exp = member.expenses.find(e => e.id === expId);
+          if (exp) {
+            exp.name = newName;
+            exp.amount = newAmount;
+            saveDataToStorage();
+            render();
+            showToast(`Đã sửa khoản chi thành "${newName}"`, 'success');
+          }
+        }
+        closeEditModal();
+      };
+    }
+
+    // Delete Expense
+    function deleteExpense(memberId, expId) {
+      const member = state.members.find(m => m.id === memberId);
+      if (!member) return;
+      const exp = member.expenses.find(e => e.id === expId);
+      const expName = exp ? exp.name : "khoản chi";
+
+      if (confirm(`Xóa khoản chi "${expName}"?`)) {
+        member.expenses = member.expenses.filter(e => e.id !== expId);
+        saveDataToStorage();
+        render();
+        showToast(`Đã xóa "${expName}"`, 'info');
+      }
+    }
+
+    function selectMember(id) {
+      state.selectedMemberId = id;
+      render();
+    }
+
+    function closeEditModal() {
+      const modalOverlay = document.getElementById('editModalOverlay');
+      modalOverlay.classList.remove('active');
+      document.getElementById('txtModalInputAmount').oninput = null;
+    }
+
+    // Toast Alert Notification UI
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      let svgIcon = '';
+      if (type === 'success') {
+        svgIcon = `<svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+      } else if (type === 'info') {
+        svgIcon = `<svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+      }
+
+      toast.innerHTML = `${svgIcon} <span>${message}</span>`;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('active');
+      }, 50);
+
+      setTimeout(() => {
+        toast.classList.remove('active');
+        setTimeout(() => {
+          toast.remove();
+        }, 400);
+      }, 3000);
+    }
+
+    // Calculations & UI Renders
+    function render() {
+      const membersCount = state.members.length;
+      let totalPartyCost = 0;
+
+      const memberTotals = state.members.map(m => {
+        const spent = m.expenses.reduce((sum, e) => sum + e.amount, 0);
+        totalPartyCost += spent;
+        return {
+          id: m.id,
+          name: m.name,
+          spent: spent,
+          expenses: m.expenses
+        };
+      });
+
+      const averageCost = membersCount > 0 ? (totalPartyCost / membersCount) : 0;
+
+      // Update Dashboard Stats cards
+      document.getElementById('statTotalCost').innerText = formatMoney(totalPartyCost);
+      document.getElementById('statAvgCost').innerText = formatMoney(Math.round(averageCost));
+      document.getElementById('statTotalMembers').innerText = `${membersCount} người`;
+      document.getElementById('lblMemberCount').innerText = membersCount;
+
+      // Render Presets for members
+      renderMemberPresets();
+
+      // Render Member List UI
+      const memberListContainer = document.getElementById('memberListContainer');
+      memberListContainer.innerHTML = '';
+
+      if (state.members.length === 0) {
+        memberListContainer.innerHTML = `<div class="no-records-msg">Không có ai trong danh sách. Thêm tên ở trên!</div>`;
+      } else {
+        memberTotals.forEach(m => {
+          const isSelected = m.id === state.selectedMemberId;
+          const avatarLetter = m.name.charAt(0).toUpperCase();
+
+          const itemDiv = document.createElement('div');
+          itemDiv.className = `member-item ${isSelected ? 'selected' : ''}`;
+          itemDiv.id = `memberItem_${m.id}`;
+          itemDiv.setAttribute('onclick', `selectMember('${m.id}')`);
+
+          itemDiv.innerHTML = `
+            <div class="member-info">
+              <div class="member-avatar">${avatarLetter}</div>
+              <div>
+                <div class="member-name-text">${m.name}</div>
+                <div class="member-spent-badge">Đã chi: ${formatMoney(m.spent)}</div>
+              </div>
+            </div>
+            <div class="member-actions">
+              <button class="action-btn-mini" onclick="event.stopPropagation(); openEditMemberModal('${m.id}', '${m.name}')" title="Sửa tên">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="action-btn-mini delete-btn" onclick="deleteMember('${m.id}', event)" title="Xóa">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          `;
+          memberListContainer.appendChild(itemDiv);
+        });
+      }
+
+      // Render Selected Member Expenses Panel
+      const expenseSectionWrapper = document.getElementById('expenseSectionWrapper');
+      const activeMember = state.members.find(m => m.id === state.selectedMemberId);
+
+      if (!activeMember) {
+        expenseSectionWrapper.innerHTML = `
+          <div class="no-member-selected-placeholder">
+            <svg class="icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4M12 16h.01"/>
+            </svg>
+            <p>Chọn một đồng bọn bên trên để quản lý các món đã chi</p>
+          </div>
+        `;
+      } else {
+        const activeTotals = memberTotals.find(m => m.id === activeMember.id);
+        const totalSpentByActive = activeTotals ? activeTotals.spent : 0;
+
+        expenseSectionWrapper.innerHTML = `
+          <div class="card-title" style="margin-bottom: 0.75rem;">
+            <span>Món đã chi của: <strong style="color:var(--amber)">${activeMember.name}</strong></span>
+            <span class="count-badge" style="background:rgba(217, 119, 6, 0.15); color:var(--amber)">Tổng: ${formatMoney(totalSpentByActive)}</span>
+          </div>
+
+          <div class="expense-list" id="expenseItemsContainer">
+            <!-- Render specific items here -->
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:0.5rem; border-top:1px solid rgba(217, 119, 6, 0.15); padding-top:1rem;">
+            
+            <div class="form-row" style="margin-bottom: 0.25rem;">
+              <div class="input-wrapper" style="flex: 1.4;">
+                <input type="text" id="txtExpenseName" class="form-input" placeholder="Tên món ăn... (ví dụ: Bia, Lẩu)" onkeydown="if(event.key==='Enter') document.getElementById('txtExpenseAmount').focus()">
+              </div>
+              <div class="input-wrapper" style="flex: 1;">
+                <input type="text" id="txtExpenseAmount" class="form-input" placeholder="Số tiền (đ)..." onkeydown="if(event.key==='Enter') addExpense()">
+              </div>
+              <button class="btn btn-success" onclick="addExpense()">
+                <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Thêm
+              </button>
+            </div>
+            
+            <!-- Frictionless expense presets and amount additions -->
+            <div class="quick-presets-wrapper">
+              <div class="quick-presets-group">
+                <div class="quick-presets-label">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24" style="stroke:var(--amber)"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  Chọn nhanh món & nạp nhanh tiền:
+                </div>
+                <div class="quick-presets-row" id="expenseTagsContainer" style="margin-bottom: 0.15rem;">
+                  <!-- Suggestion buttons filled by JS -->
+                </div>
+                <div class="quick-presets-row">
+                  <button class="preset-chip" onclick="incrementAmount(50000)">+50k</button>
+                  <button class="preset-chip" onclick="incrementAmount(100000)">+100k</button>
+                  <button class="preset-chip" onclick="incrementAmount(200000)">+200k</button>
+                  <button class="preset-chip" onclick="incrementAmount(500000)">+500k</button>
+                  <button class="preset-chip" onclick="incrementAmount(1000000)">+1Tr</button>
+                  <button class="preset-chip danger-preset" onclick="clearAmountInput()">Xóa số</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:0.72rem; color:var(--text-muted); display:flex; justify-content:space-between; margin-top:-0.25rem;">
+              <span>Gợi ý: Nhập rồi gõ Enter để thêm liên tục</span>
+            </div>
+          </div>
+        `;
+
+        formatCurrencyInput(document.getElementById('txtExpenseAmount'));
+        renderExpensePresets();
+
+        const expenseItemsContainer = document.getElementById('expenseItemsContainer');
+        if (activeMember.expenses.length === 0) {
+          expenseItemsContainer.innerHTML = `<div class="no-records-msg">Chưa có món chi tiêu nào cho thành viên này.</div>`;
+        } else {
+          activeMember.expenses.forEach(e => {
+            const expDiv = document.createElement('div');
+            expDiv.className = 'expense-item';
+            expDiv.innerHTML = `
+              <div class="expense-item-name">${e.name}</div>
+              <div class="expense-item-val">
+                <span class="expense-amount-label">${formatMoney(e.amount)}</span>
+                <button class="action-btn-mini" onclick="openEditExpenseModal('${activeMember.id}', '${e.id}', '${e.name}', ${e.amount})" title="Sửa">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+                <button class="action-btn-mini delete-btn" onclick="deleteExpense('${activeMember.id}', '${e.id}')" title="Xóa">
+                  <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            `;
+            expenseItemsContainer.appendChild(expDiv);
+          });
+        }
+      }
+
+      // Render Live Dashboard Progress & Calculations
+      const progressBarsContainer = document.getElementById('progressBarsContainer');
+      progressBarsContainer.innerHTML = '';
+
+      const receiversListContainer = document.getElementById('receiversListContainer');
+      const payersListContainer = document.getElementById('payersListContainer');
+      receiversListContainer.innerHTML = '';
+      payersListContainer.innerHTML = '';
+
+      if (membersCount === 0) {
+        progressBarsContainer.innerHTML = `<div class="no-records-msg">Chưa có thành viên để lập biểu đồ.</div>`;
+        receiversListContainer.innerHTML = `<div class="no-records-msg">Không có dữ liệu.</div>`;
+        payersListContainer.innerHTML = `<div class="no-records-msg">Không có dữ liệu.</div>`;
+        return;
+      }
+
+      const maxSpend = Math.max(...memberTotals.map(m => m.spent), 0);
+      const upperLimit = Math.max(maxSpend, averageCost) || 1;
+
+      memberTotals.forEach(m => {
+        const pct = (m.spent / upperLimit) * 100;
+        
+        const barItem = document.createElement('div');
+        barItem.className = 'progress-item';
+
+        const avgPct = (averageCost / upperLimit) * 100;
+
+        let fillGradient = 'var(--primary-gradient)';
+        let statusBadge = '';
+
+        if (m.spent > averageCost) {
+          fillGradient = 'var(--emerald-gradient)';
+          statusBadge = `<span class="text-emerald" style="font-weight:700;font-size:0.75rem;">+${formatMoney(Math.round(m.spent - averageCost))}</span>`;
+        } else if (m.spent < averageCost) {
+          fillGradient = 'var(--rose-gradient)';
+          statusBadge = `<span class="text-rose" style="font-weight:700;font-size:0.75rem;">-${formatMoney(Math.round(averageCost - m.spent))}</span>`;
+        }
+
+        barItem.innerHTML = `
+          <div class="progress-label-row">
+            <span class="progress-member-name">${m.name} ${statusBadge}</span>
+            <span class="progress-amount-info">${formatMoney(m.spent)}</span>
+          </div>
+          <div class="progress-bar-container" style="--avg-percentage: ${avgPct}%; --display-avg-line: ${averageCost > 0 ? 'block' : 'none'};">
+            <div class="progress-bar-fill" style="width: ${pct}%; background: ${fillGradient}"></div>
+          </div>
+        `;
+        progressBarsContainer.appendChild(barItem);
+      });
+
+      // Split into Receivers and Payers lists
+      let hasReceivers = false;
+      let hasPayers = false;
+
+      memberTotals.forEach(m => {
+        const netValue = m.spent - averageCost;
+        if (netValue > 0.05) {
+          hasReceivers = true;
+          const div = document.createElement('div');
+          div.className = 'split-box-item';
+          div.innerHTML = `
+            <span class="name">${m.name}</span>
+            <span class="val">+${formatMoney(Math.round(netValue))}</span>
+          `;
+          receiversListContainer.appendChild(div);
+        } else if (netValue < -0.05) {
+          hasPayers = true;
+          const div = document.createElement('div');
+          div.className = 'split-box-item';
+          div.innerHTML = `
+            <span class="name">${m.name}</span>
+            <span class="val">${formatMoney(Math.round(Math.abs(netValue)))}</span>
+          `;
+          payersListContainer.appendChild(div);
+        }
+      });
+
+      if (!hasReceivers) {
+        receiversListContainer.innerHTML = `<div class="no-records-msg">Không có ai nhận lại tiền.</div>`;
+      }
+      if (!hasPayers) {
+        payersListContainer.innerHTML = `<div class="no-records-msg">Mọi người đã đóng đều nhau!</div>`;
+      }
+    }
+
+    // Copy formatted report text to clipboard
+    function copyReportToClipboard() {
+      if (state.members.length === 0) {
+        showToast('Chưa có thành viên để lập báo cáo!', 'info');
+        return;
+      }
+
+      const membersCount = state.members.length;
+      let totalPartyCost = 0;
+      const memberTotals = state.members.map(m => {
+        const spent = m.expenses.reduce((sum, e) => sum + e.amount, 0);
+        totalPartyCost += spent;
+        return { name: m.name, spent: spent };
+      });
+      const averageCost = membersCount > 0 ? (totalPartyCost / membersCount) : 0;
+
+      const receivers = [];
+      const payers = [];
+      const equal = [];
+
+      memberTotals.forEach(m => {
+        const diff = m.spent - averageCost;
+        if (diff > 0.05) {
+          receivers.push({ name: m.name, amount: Math.round(diff), spent: m.spent });
+        } else if (diff < -0.05) {
+          payers.push({ name: m.name, amount: Math.round(Math.abs(diff)), spent: m.spent });
+        } else {
+          equal.push({ name: m.name, spent: m.spent });
+        }
+      });
+
+      receivers.sort((a, b) => b.amount - a.amount);
+      payers.sort((a, b) => b.amount - a.amount);
+
+      let text = `📊 SỚ CHIA TIỀN TIỆC - CAM-PU-CHIA 📊\n`;
+      text += `------------------------------------\n`;
+      text += `💰 Tổng thiệt hại: ${formatMoney(totalPartyCost)}\n`;
+      text += `👥 Sĩ số đồng bọn: ${membersCount} người\n`;
+      text += `💸 Lệ quyên đầu người: ${formatMoney(Math.round(averageCost))}\n\n`;
+
+      text += `🟢 CHỦ XỊ NHẬN LẠI TIỀN:\n`;
+      if (receivers.length === 0) {
+        text += `  (Không có ai)\n`;
+      } else {
+        receivers.forEach(r => {
+          text += `  • ${r.name}: Nhận lại ${formatMoney(r.amount)} (Đã chi hộ: ${formatMoney(r.spent)})\n`;
+        });
+      }
+      text += `\n`;
+
+      text += `🔴 ĐỒNG BỌN CẦN NỘP THÊM:\n`;
+      if (payers.length === 0) {
+        text += `  (Không có ai)\n`;
+      } else {
+        payers.forEach(p => {
+          text += `  • ${p.name}: Cần nộp ${formatMoney(p.amount)} (Đã chi: ${formatMoney(p.spent)})\n`;
+        });
+      }
+
+      if (equal.length > 0) {
+        text += `\n🟡 ĐÃ CHI ĐÚNG PHẦN:\n`;
+        equal.forEach(eq => {
+          text += `  • ${eq.name}: Đã góp đúng ${formatMoney(eq.spent)}\n`;
+        });
+      }
+
+      text += `\n------------------------------------\n`;
+      text += `Báo cáo thông minh tạo bởi PartyCalc 🚀`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Đã copy sớ nợ vào bộ nhớ tạm!', 'success');
+      }).catch(err => {
+        console.error('Không thể copy', err);
+        showToast('Có lỗi xảy ra khi copy sớ nợ.', 'info');
+      });
+    }
+
+    // High Quality Export Screenshot using Canvas (Sơn mài Việt Nam Theme)
+    function exportReportAsImage() {
+      if (state.members.length === 0) {
+        showToast('Chưa có thành viên để lập báo cáo!', 'info');
+        return;
+      }
+
+      const membersCount = state.members.length;
+      let totalPartyCost = 0;
+      const memberTotals = state.members.map(m => {
+        const spent = m.expenses.reduce((sum, e) => sum + e.amount, 0);
+        totalPartyCost += spent;
+        return { name: m.name, spent: spent };
+      });
+      const averageCost = membersCount > 0 ? (totalPartyCost / membersCount) : 0;
+
+      const receivers = [];
+      const payers = [];
+      const equal = [];
+
+      memberTotals.forEach(m => {
+        const diff = m.spent - averageCost;
+        if (diff > 0.05) {
+          receivers.push({ name: m.name, amount: Math.round(diff), spent: m.spent });
+        } else if (diff < -0.05) {
+          payers.push({ name: m.name, amount: Math.round(Math.abs(diff)), spent: m.spent });
+        } else {
+          equal.push({ name: m.name, spent: m.spent });
+        }
+      });
+
+      receivers.sort((a, b) => b.amount - a.amount);
+      payers.sort((a, b) => b.amount - a.amount);
+
+      const headerHeight = 230;
+      const statsHeight = 125;
+      const itemsPadding = 45;
+      const rowHeight = 38;
+      const sectionHeaderHeight = 50;
+      const footerHeight = 110;
+
+      let calculatedHeight = headerHeight + statsHeight + footerHeight;
+
+      if (receivers.length > 0) {
+        calculatedHeight += sectionHeaderHeight + (receivers.length * rowHeight) + itemsPadding;
+      } else {
+        calculatedHeight += sectionHeaderHeight + rowHeight + itemsPadding;
+      }
+
+      if (payers.length > 0) {
+        calculatedHeight += sectionHeaderHeight + (payers.length * rowHeight) + itemsPadding;
+      } else {
+        calculatedHeight += sectionHeaderHeight + rowHeight + itemsPadding;
+      }
+
+      if (equal.length > 0) {
+        calculatedHeight += sectionHeaderHeight + (equal.length * rowHeight) + itemsPadding;
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      const width = 640;
+      canvas.width = width;
+      canvas.height = calculatedHeight;
+
+      // Sơn mài Gradient Background
+      const mainGrad = ctx.createLinearGradient(0, 0, 0, calculatedHeight);
+      mainGrad.addColorStop(0, '#1c0e15'); // Lacquer deep red
+      mainGrad.addColorStop(0.5, '#0c070c');
+      mainGrad.addColorStop(1, '#050305'); // Lacquer black
+      ctx.fillStyle = mainGrad;
+      ctx.fillRect(0, 0, width, calculatedHeight);
+
+      // Gold-bronze glow blobs
+      ctx.fillStyle = 'rgba(217, 119, 6, 0.04)';
+      ctx.beginPath();
+      ctx.arc(80, 100, 250, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(225, 29, 72, 0.04)';
+      ctx.beginPath();
+      ctx.arc(width - 80, calculatedHeight - 120, 250, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Outer gold-bronze vintage border
+      const padding = 30;
+      ctx.strokeStyle = 'rgba(217, 119, 6, 0.16)';
+      ctx.lineWidth = 1.5;
+      ctx.fillStyle = 'rgba(22, 15, 24, 0.2)';
+      drawRoundRect(ctx, padding, padding, width - (padding * 2), calculatedHeight - (padding * 2), 24, true, true);
+
+      // Decorative inner gold line
+      ctx.strokeStyle = 'rgba(217, 119, 6, 0.06)';
+      ctx.lineWidth = 1;
+      drawRoundRect(ctx, padding + 6, padding + 6, width - (padding * 2) - 12, calculatedHeight - (padding * 2) - 12, 18, false, true);
+
+      // Logo Lotus icon drawn onto canvas
+      ctx.save();
+      ctx.translate(width / 2 - 20, 60);
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      // Lotus Petal Outline
+      ctx.moveTo(20, 30);
+      ctx.bezierCurveTo(10, 22, 10, 15, 20, 5);
+      ctx.bezierCurveTo(30, 15, 30, 22, 20, 30);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.font = '800 32px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.fillText('PartyCalc', width / 2, 125);
+
+      ctx.font = '700 13px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#fbbf24'; // Gold
+      ctx.fillText('SỚ CHIA TIỀN TIỆC (CAM-PU-CHIA)', width / 2, 155);
+
+      const now = new Date();
+      const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()} lúc ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      ctx.font = '400 11px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.fillText(`Xuất ngày ${timeStr}`, width / 2, 178);
+
+      // Dashed divider line
+      ctx.strokeStyle = 'rgba(217, 119, 6, 0.15)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(padding + 25, 205);
+      ctx.lineTo(width - padding - 25, 205);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 3 Stat Cards
+      const statColW = (width - (padding * 2) - 40) / 3;
+      const statsY = 225;
+
+      for (let i = 0; i < 3; i++) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        ctx.strokeStyle = 'rgba(217, 119, 6, 0.12)';
+        drawRoundRect(ctx, padding + 20 + i * (statColW + 10), statsY, statColW - 10, 80, 12, true, true);
+      }
+
+      ctx.textAlign = 'center';
+      ctx.font = '700 10px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('TỔNG THIỆT HẠI', padding + 20 + (statColW - 10)/2, statsY + 28);
+      ctx.font = '800 16px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#fbbf24'; // Gold
+      ctx.fillText(formatMoney(totalPartyCost), padding + 20 + (statColW - 10)/2, statsY + 54);
+
+      ctx.font = '700 10px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('LỆ QUYÊN / ĐẦU NGƯỜI', padding + 20 + statColW + 5 + (statColW - 10)/2, statsY + 28);
+      ctx.font = '800 16px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#34d399'; // Jade
+      ctx.fillText(formatMoney(Math.round(averageCost)), padding + 20 + statColW + 5 + (statColW - 10)/2, statsY + 54);
+
+      ctx.font = '700 10px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('SĨ SỐ ĐỒNG BỌN', padding + 20 + (statColW + 5) * 2 + (statColW - 10)/2, statsY + 28);
+      ctx.font = '800 16px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillText(`${membersCount} người`, padding + 20 + (statColW + 5) * 2 + (statColW - 10)/2, statsY + 54);
+
+      let currentY = statsY + 115;
+
+      // Section 1: Receivers (Chủ xị)
+      ctx.textAlign = 'left';
+      ctx.font = '800 13px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#34d399';
+      ctx.fillText('🟢 CHỦ XỊ NHẬN LẠI TIỀN', padding + 20, currentY);
+      
+      currentY += 22;
+
+      if (receivers.length === 0) {
+        ctx.font = 'italic 13px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('Không có ai nhận lại tiền', padding + 20, currentY);
+        currentY += rowHeight;
+      } else {
+        receivers.forEach(r => {
+          ctx.font = '600 14px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(r.name, padding + 25, currentY);
+
+          ctx.textAlign = 'right';
+          ctx.font = 'bold 14px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#34d399';
+          ctx.fillText(`+${formatMoney(r.amount)}`, width - padding - 25, currentY);
+          
+          ctx.font = '400 11px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#64748b';
+          ctx.fillText(`Đã chi hộ: ${formatMoney(r.spent)}`, width - padding - 25, currentY + 14);
+
+          ctx.textAlign = 'left';
+          currentY += rowHeight + 8;
+        });
+      }
+
+      currentY += 15;
+
+      // Section 2: Payers (Nộp thêm)
+      ctx.font = '800 13px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#fb7185';
+      ctx.fillText('🔴 ĐỒNG BỌN CẦN NỘP THÊM', padding + 20, currentY);
+      
+      currentY += 22;
+
+      if (payers.length === 0) {
+        ctx.font = 'italic 13px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+        ctx.fillStyle = '#64748b';
+        ctx.fillText('Mọi người đã chi đều nhau', padding + 20, currentY);
+        currentY += rowHeight;
+      } else {
+        payers.forEach(p => {
+          ctx.font = '600 14px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(p.name, padding + 25, currentY);
+
+          ctx.textAlign = 'right';
+          ctx.font = 'bold 14px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#fb7185';
+          ctx.fillText(formatMoney(p.amount), width - padding - 25, currentY);
+
+          ctx.font = '400 11px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#64748b';
+          ctx.fillText(`Đã chi: ${formatMoney(p.spent)}`, width - padding - 25, currentY + 14);
+
+          ctx.textAlign = 'left';
+          currentY += rowHeight + 8;
+        });
+      }
+
+      // Section 3: Equal (Đúng phần)
+      if (equal.length > 0) {
+        currentY += 15;
+        ctx.font = '800 13px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillText('🟡 ĐÃ GÓP ĐÚNG PHẦN', padding + 20, currentY);
+        
+        currentY += 22;
+
+        equal.forEach(eq => {
+          ctx.font = '600 14px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(eq.name, padding + 25, currentY);
+
+          ctx.textAlign = 'right';
+          ctx.font = '400 13px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText(`Đã chi: ${formatMoney(eq.spent)}`, width - padding - 25, currentY);
+
+          ctx.textAlign = 'left';
+          currentY += rowHeight;
+        });
+      }
+
+      currentY += 25;
+
+      ctx.textAlign = 'center';
+      ctx.font = 'italic 12px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#64748b';
+      ctx.fillText('Hẹn gặp lại đồng bọn trong các bữa tiệc sau! 🎉', width / 2, currentY);
+      
+      ctx.font = '700 10px "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#d97706';
+      ctx.fillText('Thiết kế chuẩn Việt Nam bởi PartyCalc 🇻🇳', width / 2, currentY + 18);
+
+      try {
+        const url = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `So_no_chia_tien_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.png`;
+        link.href = url;
+        link.click();
+        showToast('Đã tải sớ nợ dạng ảnh thành công!', 'success');
+      } catch (err) {
+        console.error('Không thể tạo file ảnh', err);
+        showToast('Có lỗi xảy ra khi tạo sớ nợ dạng ảnh.', 'info');
+      }
+    }
+  </script>
+</body>
+</html>
