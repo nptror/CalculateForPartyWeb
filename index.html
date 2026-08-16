@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
     /* CSS Variables & Lacquer Gold Theme Setup (Chất liệu Việt Nam) */
@@ -973,9 +976,272 @@
     .text-rose {
       color: #fb7185;
     }
+
+    /* ===== LOBBY SCREEN ===== */
+    #lobbyScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-main);
+      background-image: var(--bg-gradient);
+      padding: 1.5rem;
+    }
+    #lobbyScreen.hidden { display: none; }
+
+    .lobby-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(217, 119, 6, 0.25);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(217,119,6,0.08);
+      text-align: center;
+      animation: lobby-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes lobby-pop {
+      from { opacity: 0; transform: scale(0.88) translateY(24px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .lobby-logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1rem;
+      color: #fbbf24;
+      filter: drop-shadow(0 4px 12px rgba(217,119,6,0.4));
+    }
+    .lobby-title {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+    }
+    .lobby-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+    .lobby-btn-create {
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      background: var(--primary-gradient);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 20px rgba(217,119,6,0.35);
+      transition: var(--transition-base);
+      font-family: var(--font);
+    }
+    .lobby-btn-create:hover { opacity: 0.88; transform: translateY(-1px); }
+    .lobby-btn-create:active { transform: scale(0.98); }
+
+    .lobby-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    .lobby-divider::before, .lobby-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(217,119,6,0.15);
+    }
+
+    .lobby-join-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .lobby-join-row .form-input {
+      flex: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 700;
+      text-align: center;
+    }
+    .lobby-btn-join {
+      padding: 0 1.25rem;
+      background: rgba(217,119,6,0.12);
+      color: var(--primary);
+      border: 1px solid rgba(217,119,6,0.3);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      transition: var(--transition-base);
+      font-family: var(--font);
+    }
+    .lobby-btn-join:hover { background: rgba(217,119,6,0.2); }
+
+    #lobbyError {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: #fb7185;
+      min-height: 1.2em;
+    }
+    .lobby-spinner {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(217,119,6,0.3);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== ROOM HEADER BAR ===== */
+    #roomBar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      background: rgba(217,119,6,0.07);
+      border: 1px solid rgba(217,119,6,0.2);
+      border-radius: 0.875rem;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1.25rem;
+    }
+    #roomBar.hidden { display: none; }
+
+    .room-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.88rem;
+    }
+    .room-code-badge {
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      color: #fbbf24;
+      background: rgba(217,119,6,0.12);
+      border: 1px solid rgba(217,119,6,0.3);
+      border-radius: 0.5rem;
+      padding: 0.1rem 0.55rem;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+    .room-code-badge:hover { background: rgba(217,119,6,0.22); }
+
+    .online-dot {
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 6px #34d399;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .online-count {
+      color: #34d399;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .room-bar-right {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-room-sm {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-family: var(--font);
+      transition: var(--transition-base);
+    }
+    .btn-copy-link {
+      background: rgba(217,119,6,0.1);
+      border-color: rgba(217,119,6,0.25);
+      color: var(--primary);
+    }
+    .btn-copy-link:hover { background: rgba(217,119,6,0.2); }
+    .btn-leave-room {
+      background: rgba(225,29,72,0.08);
+      border-color: rgba(225,29,72,0.2);
+      color: #fb7185;
+    }
+    .btn-leave-room:hover { background: rgba(225,29,72,0.16); }
+
+    /* Realtime sync flash indicator */
+    .sync-flash {
+      animation: sync-pulse 0.6s ease-out;
+    }
+    @keyframes sync-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(52,211,153,0.5); }
+      70%  { box-shadow: 0 0 0 10px rgba(52,211,153,0); }
+      100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+    }
   </style>
 </head>
 <body>
+
+  <!-- ===== LOBBY SCREEN ===== -->
+  <div id="lobbyScreen">
+    <div class="lobby-card">
+      <!-- Logo -->
+      <svg class="lobby-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M12,21 C12,21 6,16 6,11 C6,7 12,3 12,3 C12,3 18,7 18,11 C18,16 12,21 12,21 Z" />
+        <path d="M12,21 C12,21 4,18 4,12 C4,8 10,6 10,6" />
+        <path d="M12,21 C12,21 20,18 20,12 C20,8 14,6 14,6" />
+        <path d="M12,21 Q12,17 9,15 C9,15 7,12 8,9 C9,6 12,8 12,8" />
+        <path d="M12,21 Q12,17 15,15 C15,15 17,12 16,9 C15,6 12,8 12,8" />
+        <circle cx="12" cy="18" r="1" fill="currentColor" />
+      </svg>
+      <div class="lobby-title">PartyCalc</div>
+      <div class="lobby-subtitle">Cam-pu-chia tiền tiệc cùng bạn bè theo thời gian thực 🍻</div>
+
+      <!-- Create Room -->
+      <button class="lobby-btn-create" id="btnCreateRoom" onclick="createRoom()">
+        ✨ Tạo phòng mới
+      </button>
+
+      <div class="lobby-divider">hoặc vào phòng đã có</div>
+
+      <!-- Join Room -->
+      <div class="lobby-join-row">
+        <input
+          type="text"
+          id="txtRoomCode"
+          class="form-input"
+          placeholder="Mã phòng..."
+          maxlength="6"
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter') joinRoom()"
+        >
+        <button class="lobby-btn-join" onclick="joinRoom()">Vào phòng →</button>
+      </div>
+      <div id="lobbyError"></div>
+    </div>
+  </div>
+
 
   <!-- Vietnam Dong Son Bronze Drum Watermarks -->
   <svg class="dongson-drum-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -1008,7 +1274,28 @@
     <polygon points="100,68 103,84 116,74 109,89 124,87 112,96 128,100 112,104 124,113 109,111 116,126 103,116 100,132 97,116 84,126 91,111 76,113 88,104 72,100 88,96 76,87 91,89 84,74 97,84" fill="currentColor"/>
   </svg>
 
-  <div class="container">
+  <div class="container" id="mainApp" style="display:none;">
+
+    <!-- Room Header Bar -->
+    <div id="roomBar">
+      <div class="room-bar-left">
+        <span class="online-dot"></span>
+        <span class="online-count" id="lblOnlineCount">1 người online</span>
+        <span style="color:var(--text-muted);">|</span>
+        <span style="color:var(--text-secondary); font-size:0.82rem;">Phòng:</span>
+        <span class="room-code-badge" id="lblRoomCode" onclick="copyRoomLink()" title="Click để copy link">------</span>
+      </div>
+      <div class="room-bar-right">
+        <button class="btn-room-sm btn-copy-link" onclick="copyRoomLink()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Copy link
+        </button>
+        <button class="btn-room-sm btn-leave-room" onclick="leaveRoom()">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Ra phòng
+        </button>
+      </div>
+    </div>
     
     <!-- Header Page -->
     <header>
@@ -1239,7 +1526,24 @@
 
   <!-- Javascript Logic -->
   <script>
-    // State management
+    // ==========================================
+    // SUPABASE CONFIG
+    // ==========================================
+    const SUPABASE_URL = 'https://aegaadvylegvnyivyxdl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2FhZHZ5bGVndm55aXZ5eGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MjcyNDMsImV4cCI6MjEwMjQwMzI0M30.xa1NCgPeedTQb1jE2qsWBYoF6HugsfopXw-ghvBpbi0';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // ==========================================
+    // ROOM STATE
+    // ==========================================
+    let currentRoomCode = null;
+    let realtimeChannel = null;
+    let onlineCount = 1;
+    let isSyncing = false; // prevent echo loop
+
+    // ==========================================
+    // STATE MANAGEMENT
+    // ==========================================
     let state = {
       members: [],
       selectedMemberId: null
@@ -1263,36 +1567,237 @@
       { label: "Taxi / Grab 🚗", value: "Taxi / Grab" }
     ];
 
-    // Initialize application
+    // ==========================================
+    // LOBBY: Init on page load
+    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
-      loadDataFromStorage();
-      if (state.members.length === 0) {
-        setupDefaultState();
+      // Check URL for room code (e.g. ?room=ABC123)
+      const params = new URLSearchParams(window.location.search);
+      const roomFromUrl = params.get('room');
+      if (roomFromUrl && roomFromUrl.length === 6) {
+        document.getElementById('txtRoomCode').value = roomFromUrl.toUpperCase();
+        joinRoom(roomFromUrl.toUpperCase());
       }
-      render();
     });
 
-    // Setup empty members default state
-    function setupDefaultState() {
-      state.members = DEFAULT_MEMBERS.map((name, index) => ({
-        id: 'member_' + Date.now() + '_' + index,
-        name: name,
-        expenses: []
-      }));
-      state.selectedMemberId = state.members[0].id;
-      saveDataToStorage();
+    // ==========================================
+    // LOBBY FUNCTIONS
+    // ==========================================
+    function generateRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
     }
 
-    // Storage utilities
-    function loadDataFromStorage() {
-      try {
-        const stored = localStorage.getItem('calculate_for_party_data');
-        if (stored) {
-          state = JSON.parse(stored);
-        }
-      } catch (err) {
-        console.error('Error loading data from localStorage', err);
+    function setLobbyLoading(isLoading, message = '') {
+      const btn = document.getElementById('btnCreateRoom');
+      if (isLoading) {
+        btn.innerHTML = `<span class="lobby-spinner"></span>${message}`;
+        btn.disabled = true;
+      } else {
+        btn.innerHTML = '✨ Tạo phòng mới';
+        btn.disabled = false;
       }
+    }
+
+    function setLobbyError(msg) {
+      document.getElementById('lobbyError').textContent = msg;
+    }
+
+    async function createRoom() {
+      const code = generateRoomCode();
+      setLobbyLoading(true, 'Đang tạo phòng...');
+      setLobbyError('');
+      try {
+        // Create room in DB with empty state
+        const defaultState = {
+          members: DEFAULT_MEMBERS.map((name, i) => ({
+            id: 'member_' + Date.now() + '_' + i,
+            name, expenses: []
+          })),
+          selectedMemberId: null
+        };
+        defaultState.selectedMemberId = defaultState.members[0].id;
+
+        const { error } = await supabase.from('party_rooms').insert({
+          room_code: code,
+          state: defaultState,
+          updated_at: new Date().toISOString()
+        });
+        if (error) throw error;
+
+        await enterRoom(code, defaultState);
+      } catch (err) {
+        console.error(err);
+        setLobbyError('Không tạo được phòng: ' + err.message);
+        setLobbyLoading(false);
+      }
+    }
+
+    async function joinRoom(codeOverride) {
+      const code = (codeOverride || document.getElementById('txtRoomCode').value.trim().toUpperCase());
+      if (code.length !== 6) { setLobbyError('Mã phòng phải có đúng 6 ký tự!'); return; }
+      setLobbyError('');
+      const joinBtn = document.querySelector('.lobby-btn-join');
+      joinBtn.textContent = 'Đang vào...';
+      joinBtn.disabled = true;
+      try {
+        const { data, error } = await supabase
+          .from('party_rooms')
+          .select('state')
+          .eq('room_code', code)
+          .single();
+        if (error || !data) {
+          setLobbyError('Không tìm thấy phòng "' + code + '"!');
+          joinBtn.textContent = 'Vào phòng →';
+          joinBtn.disabled = false;
+          return;
+        }
+        await enterRoom(code, data.state);
+      } catch (err) {
+        console.error(err);
+        setLobbyError('Lỗi kết nối: ' + err.message);
+        joinBtn.textContent = 'Vào phòng →';
+        joinBtn.disabled = false;
+      }
+    }
+
+    async function enterRoom(code, loadedState) {
+      currentRoomCode = code;
+      state = loadedState;
+      if (!state.selectedMemberId && state.members.length > 0) {
+        state.selectedMemberId = state.members[0].id;
+      }
+
+      // Update URL without reload
+      window.history.replaceState({}, '', '?room=' + code);
+
+      // Show app, hide lobby
+      document.getElementById('lobbyScreen').classList.add('hidden');
+      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('lblRoomCode').textContent = code;
+
+      // Subscribe to realtime channel
+      subscribeToChannel(code);
+
+      render();
+    }
+
+    function leaveRoom() {
+      if (!confirm('Bạn có chắc muốn rời phòng? Dữ liệu vẫn được lưu trên cloud.')) return;
+      // Cleanup
+      if (realtimeChannel) {
+        supabase.removeChannel(realtimeChannel);
+        realtimeChannel = null;
+      }
+      currentRoomCode = null;
+      state = { members: [], selectedMemberId: null };
+      window.history.replaceState({}, '', window.location.pathname);
+
+      // Reset lobby UI
+      document.getElementById('txtRoomCode').value = '';
+      setLobbyError('');
+      document.querySelector('.lobby-btn-join').textContent = 'Vào phòng →';
+      document.querySelector('.lobby-btn-join').disabled = false;
+      setLobbyLoading(false);
+
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('lobbyScreen').classList.remove('hidden');
+      onlineCount = 1;
+    }
+
+    // ==========================================
+    // SUPABASE REALTIME
+    // ==========================================
+    function subscribeToChannel(code) {
+      if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+
+      realtimeChannel = supabase.channel('party:' + code, {
+        config: { presence: { key: 'user_' + Math.random().toString(36).substr(2, 6) } }
+      });
+
+      // Presence: track online users
+      realtimeChannel
+        .on('presence', { event: 'sync' }, () => {
+          const presenceState = realtimeChannel.presenceState();
+          onlineCount = Object.keys(presenceState).length;
+          const el = document.getElementById('lblOnlineCount');
+          if (el) el.textContent = onlineCount + ' người online';
+        })
+        // Broadcast: receive state updates from others
+        .on('broadcast', { event: 'state_update' }, ({ payload }) => {
+          if (!payload || !payload.state) return;
+          isSyncing = true;
+          const prevSelected = state.selectedMemberId;
+          state = payload.state;
+          // Keep our own selected member if possible
+          const stillExists = state.members.find(m => m.id === prevSelected);
+          if (stillExists) state.selectedMemberId = prevSelected;
+          else if (state.members.length > 0) state.selectedMemberId = state.members[0].id;
+          render();
+          flashSyncIndicator();
+          isSyncing = false;
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') {
+            await realtimeChannel.track({ joined_at: new Date().toISOString() });
+          }
+        });
+    }
+
+    function flashSyncIndicator() {
+      const bar = document.getElementById('roomBar');
+      if (!bar) return;
+      bar.classList.remove('sync-flash');
+      void bar.offsetWidth; // reflow
+      bar.classList.add('sync-flash');
+    }
+
+    // ==========================================
+    // SUPABASE SAVE (replaces localStorage)
+    // ==========================================
+    let saveDebounceTimer = null;
+    async function saveDataToStorage() {
+      if (!currentRoomCode) return;
+      // Debounce rapid saves (e.g. typing) to 400ms
+      clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(async () => {
+        try {
+          const stateToSave = { ...state };
+          // Persist to DB
+          await supabase.from('party_rooms').upsert({
+            room_code: currentRoomCode,
+            state: stateToSave,
+            updated_at: new Date().toISOString()
+          });
+          // Broadcast to others in same channel
+          if (realtimeChannel && !isSyncing) {
+            realtimeChannel.send({
+              type: 'broadcast',
+              event: 'state_update',
+              payload: { state: stateToSave }
+            });
+          }
+        } catch (err) {
+          console.error('Supabase save error', err);
+        }
+      }, 400);
+    }
+
+    // Keep loadDataFromStorage as no-op (data loaded on enterRoom)
+    function loadDataFromStorage() {}
+
+    // ==========================================
+    // ROOM SHARING
+    // ==========================================
+    function copyRoomLink() {
+      const link = window.location.origin + window.location.pathname + '?room=' + currentRoomCode;
+      navigator.clipboard.writeText(link).then(() => {
+        showToast('Đã copy link phòng! Gửi cho đồng bọn ngay 🔗', 'success');
+      }).catch(() => {
+        showToast('Link: ' + link, 'info');
+      });
     }
 
     // Canvas round rectangle utility helper for compatibility
@@ -1312,14 +1817,6 @@
       c.closePath();
       if (fill) c.fill();
       if (stroke) c.stroke();
-    }
-
-    function saveDataToStorage() {
-      try {
-        localStorage.setItem('calculate_for_party_data', JSON.stringify(state));
-      } catch (err) {
-        console.error('Error saving data to localStorage', err);
-      }
     }
 
     // Mock Data Generator
@@ -1383,7 +1880,13 @@
     // Reset everything
     function resetAllDataConfirm() {
       if (confirm('Bạn có chắc chắn muốn làm mới toàn bộ dữ liệu? Mọi khoản chi đã nhập sẽ bị xóa sạch.')) {
-        setupDefaultState();
+        state.members = DEFAULT_MEMBERS.map((name, index) => ({
+          id: 'member_' + Date.now() + '_' + index,
+          name: name,
+          expenses: []
+        }));
+        state.selectedMemberId = state.members[0].id;
+        saveDataToStorage();
         render();
         showToast('Đã khôi phục danh sách thành viên mặc định.', 'info');
       }
