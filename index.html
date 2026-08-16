@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase JS SDK (UMD via unpkg) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   
   <style>
     /* CSS Variables & Lacquer Gold Theme Setup (Chất liệu Việt Nam) */
@@ -1531,7 +1531,18 @@
     // ==========================================
     const SUPABASE_URL = 'https://aegaadvylegvnyivyxdl.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2FhZHZ5bGVndm55aXZ5eGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MjcyNDMsImV4cCI6MjEwMjQwMzI0M30.xa1NCgPeedTQb1jE2qsWBYoF6HugsfopXw-ghvBpbi0';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // _sb = Supabase client (renamed to avoid conflict with window.supabase global from SDK)
+    let _sb = null;
+    try {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } else {
+        console.warn('Supabase SDK not ready, will retry on DOMContentLoaded');
+      }
+    } catch (e) {
+      console.error('Supabase init error:', e);
+    }
 
     // ==========================================
     // ROOM STATE
@@ -1571,6 +1582,14 @@
     // LOBBY: Init on page load
     // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
+      // Retry Supabase init in case SDK wasn't ready at parse time
+      if (!_sb && window.supabase && typeof window.supabase.createClient === 'function') {
+        try { _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
+      }
+      if (!_sb) {
+        setLobbyError('⚠️ Không tải được Supabase SDK. Kiểm tra kết nối internet và reload trang.');
+        return;
+      }
       // Check URL for room code (e.g. ?room=ABC123)
       const params = new URLSearchParams(window.location.search);
       const roomFromUrl = params.get('room');
@@ -1606,11 +1625,11 @@
     }
 
     async function createRoom() {
+      if (!_sb) { setLobbyError('⚠️ Supabase chưa kết nối, vui lòng reload trang.'); return; }
       const code = generateRoomCode();
       setLobbyLoading(true, 'Đang tạo phòng...');
       setLobbyError('');
       try {
-        // Create room in DB with empty state
         const defaultState = {
           members: DEFAULT_MEMBERS.map((name, i) => ({
             id: 'member_' + Date.now() + '_' + i,
@@ -1620,7 +1639,7 @@
         };
         defaultState.selectedMemberId = defaultState.members[0].id;
 
-        const { error } = await supabase.from('party_rooms').insert({
+        const { error } = await _sb.from('party_rooms').insert({
           room_code: code,
           state: defaultState,
           updated_at: new Date().toISOString()
@@ -1636,6 +1655,7 @@
     }
 
     async function joinRoom(codeOverride) {
+      if (!_sb) { setLobbyError('⚠️ Supabase chưa kết nối, vui lòng reload trang.'); return; }
       const code = (codeOverride || document.getElementById('txtRoomCode').value.trim().toUpperCase());
       if (code.length !== 6) { setLobbyError('Mã phòng phải có đúng 6 ký tự!'); return; }
       setLobbyError('');
@@ -1643,7 +1663,7 @@
       joinBtn.textContent = 'Đang vào...';
       joinBtn.disabled = true;
       try {
-        const { data, error } = await supabase
+        const { data, error } = await _sb
           .from('party_rooms')
           .select('state')
           .eq('room_code', code)
@@ -1686,9 +1706,8 @@
 
     function leaveRoom() {
       if (!confirm('Bạn có chắc muốn rời phòng? Dữ liệu vẫn được lưu trên cloud.')) return;
-      // Cleanup
-      if (realtimeChannel) {
-        supabase.removeChannel(realtimeChannel);
+      if (realtimeChannel && _sb) {
+        _sb.removeChannel(realtimeChannel);
         realtimeChannel = null;
       }
       currentRoomCode = null;
@@ -1711,9 +1730,10 @@
     // SUPABASE REALTIME
     // ==========================================
     function subscribeToChannel(code) {
-      if (realtimeChannel) supabase.removeChannel(realtimeChannel);
+      if (!_sb) return;
+      if (realtimeChannel) _sb.removeChannel(realtimeChannel);
 
-      realtimeChannel = supabase.channel('party:' + code, {
+      realtimeChannel = _sb.channel('party:' + code, {
         config: { presence: { key: 'user_' + Math.random().toString(36).substr(2, 6) } }
       });
 
@@ -1766,7 +1786,7 @@
         try {
           const stateToSave = { ...state };
           // Persist to DB
-          await supabase.from('party_rooms').upsert({
+          await _sb.from('party_rooms').upsert({
             room_code: currentRoomCode,
             state: stateToSave,
             updated_at: new Date().toISOString()
