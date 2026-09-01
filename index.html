@@ -1512,7 +1512,7 @@
         <label style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; display:block;" id="lblModalInput">Tên</label>
         <input type="text" id="txtModalInputText" class="form-input" placeholder="">
         <!-- For editing numbers like expense prices -->
-        <input type="text" id="txtModalInputAmount" class="form-input" placeholder="Số tiền" style="margin-top:0.75rem; display:none;">
+        <input type="text" id="txtModalInputAmount" class="form-input" placeholder="Số tiền (nhập 30 tự hiểu 30.000)" style="margin-top:0.75rem; display:none;">
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary btn-sm" onclick="closeEditModal()">Hủy</button>
@@ -1927,6 +1927,16 @@
           e.target.value = '';
         }
       });
+      inputElement.addEventListener('blur', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value) {
+          let num = parseInt(value, 10);
+          if (num > 0 && num < 1000) {
+            num = num * 1000;
+            e.target.value = num.toLocaleString('vi-VN');
+          }
+        }
+      });
     }
 
     // Add Member With Name Directly
@@ -2092,7 +2102,10 @@
 
       const name = txtName.value.trim();
       const amountVal = txtAmount.value.replace(/\D/g, '');
-      const amount = parseInt(amountVal, 10) || 0;
+      let amount = parseInt(amountVal, 10) || 0;
+      if (amount > 0 && amount < 1000) {
+        amount *= 1000;
+      }
 
       if (!name) {
         showToast('Vui lòng nhập tên khoản chi!', 'info');
@@ -2152,7 +2165,10 @@
       btnConfirm.onclick = () => {
         const newName = textInput.value.trim();
         const amtVal = amtInput.value.replace(/\D/g, '');
-        const newAmount = parseInt(amtVal, 10) || 0;
+        let newAmount = parseInt(amtVal, 10) || 0;
+        if (newAmount > 0 && newAmount < 1000) {
+          newAmount *= 1000;
+        }
 
         if (!newName) {
           showToast('Vui lòng nhập tên khoản chi!', 'info');
@@ -2331,7 +2347,7 @@
                 <input type="text" id="txtExpenseName" class="form-input" placeholder="Tên món ăn... (ví dụ: Bia, Lẩu)" onkeydown="if(event.key==='Enter') document.getElementById('txtExpenseAmount').focus()">
               </div>
               <div class="input-wrapper" style="flex: 1;">
-                <input type="text" id="txtExpenseAmount" class="form-input" placeholder="Số tiền (đ)..." onkeydown="if(event.key==='Enter') addExpense()">
+                <input type="text" id="txtExpenseAmount" class="form-input" placeholder="Số tiền (đ)... (nhập 30 tự hiểu 30.000)" onkeydown="if(event.key==='Enter') addExpense()">
               </div>
               <button class="btn btn-success" onclick="addExpense()">
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
