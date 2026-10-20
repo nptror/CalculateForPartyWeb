@@ -590,6 +590,35 @@
 
     <div class="main-grid">
       <div class="col">
+        <!-- Add expense -->
+        <div class="glass-card">
+          <div class="card-title">Thêm khoản chi</div>
+          <div class="mode-switch expense-tabs" role="tablist">
+            <button id="tabShared" class="active" role="tab" aria-selected="true" onclick="setExpenseTab('shared')"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Chia đều</button>
+            <button id="tabPersonal" role="tab" aria-selected="false" onclick="setExpenseTab('personal')"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg> Tính riêng</button>
+          </div>
+
+          <!-- Tab 1: one shared expense split across everyone -->
+          <div id="panelShared" role="tabpanel">
+            <div class="form-row">
+              <input type="text" id="txtExpName" class="form-input" placeholder="Tên khoản (VD: Thuê xe)">
+              <input type="text" id="txtExpAmount" class="form-input" placeholder="Số tiền (VD: 500 = 500.000 đ)" inputmode="numeric" onkeydown="if(event.key==='Enter') addExpense()">
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="addExpense()">+ Thêm khoản chi</button>
+            <div class="hint">Trả từ quỹ chung, chia đều cho tất cả thành viên.</div>
+          </div>
+
+          <!-- Tab 2: one round (e.g. drinks), a different amount per person -->
+          <div id="panelPersonal" role="tabpanel" hidden>
+            <div class="form-row">
+              <input type="text" id="txtPersonalName" class="form-input" placeholder="Tên lượt (VD: Cà phê)">
+            </div>
+            <div class="personal-rows" id="personalRows"></div>
+            <button class="btn btn-primary" style="width:100%" id="btnAddPersonal" onclick="addPersonalExpenses()">+ Thêm món riêng</button>
+            <div class="hint">Nhập giá từng người (gõ 30 = 30.000 đ), ai không dùng thì để trống.</div>
+          </div>
+        </div>
+
         <!-- Members -->
         <div class="glass-card member-manager-section">
           <div class="card-title">
@@ -624,35 +653,6 @@
 
           <div class="member-list-wrapper" id="memberList"></div>
           <div class="hint">Người mới thêm mặc định đã nộp. Chạm vào tên nếu ai chưa nộp. Bấm bút chì nếu ai góp số khác.</div>
-        </div>
-
-        <!-- Add expense -->
-        <div class="glass-card">
-          <div class="card-title">Thêm khoản chi</div>
-          <div class="mode-switch expense-tabs" role="tablist">
-            <button id="tabShared" class="active" role="tab" aria-selected="true" onclick="setExpenseTab('shared')"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Chia đều</button>
-            <button id="tabPersonal" role="tab" aria-selected="false" onclick="setExpenseTab('personal')"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg> Tính riêng</button>
-          </div>
-
-          <!-- Tab 1: one shared expense split across everyone -->
-          <div id="panelShared" role="tabpanel">
-            <div class="form-row">
-              <input type="text" id="txtExpName" class="form-input" placeholder="Tên khoản (VD: Thuê xe)">
-              <input type="text" id="txtExpAmount" class="form-input" placeholder="Số tiền (VD: 500 = 500.000 đ)" inputmode="numeric" onkeydown="if(event.key==='Enter') addExpense()">
-            </div>
-            <button class="btn btn-primary" style="width:100%" onclick="addExpense()">+ Thêm khoản chi</button>
-            <div class="hint">Trả từ quỹ chung, chia đều cho tất cả thành viên.</div>
-          </div>
-
-          <!-- Tab 2: one round (e.g. drinks), a different amount per person -->
-          <div id="panelPersonal" role="tabpanel" hidden>
-            <div class="form-row">
-              <input type="text" id="txtPersonalName" class="form-input" placeholder="Tên lượt (VD: Cà phê)">
-            </div>
-            <div class="personal-rows" id="personalRows"></div>
-            <button class="btn btn-primary" style="width:100%" id="btnAddPersonal" onclick="addPersonalExpenses()">+ Thêm món riêng</button>
-            <div class="hint">Nhập giá từng người (gõ 30 = 30.000 đ), ai không dùng thì để trống.</div>
-          </div>
         </div>
       </div>
 
