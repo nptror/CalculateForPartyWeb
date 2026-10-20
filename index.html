@@ -1590,7 +1590,7 @@
     const DEFAULT_MEMBERS = ["Thư", "An", "Thịnh", "Phong", "Huy", "Khoa", "Pi"];
 
     // Pool of popular Vietnamese names for quick presets (Frictionless Member Add)
-    const PRESET_NAMES = ["An", "Bình", "Cường", "Dũng", "Giang", "Hương", "Khánh", "Linh", "Minh", "Nam", "Phúc", "Quỳnh", "Sơn", "Thảo", "Trang", "Tuấn", "Vy", "Yến", "Thư", "Thịnh", "Phong", "Huy", "Khoa", "Pi"];
+    const PRESET_NAMES = ["Thư", "An", "Thịnh", "Phong", "Huy", "Khoa", "Pi", "Trang"];
 
     // Popular Vietnamese party items (Frictionless Expense Add)
     const PRESET_EXPENSES = [
@@ -2014,7 +2014,7 @@
         return;
       }
 
-      available.slice(0, 6).forEach(name => {
+      available.forEach(name => {
         const btn = document.createElement('button');
         btn.className = 'preset-chip';
         btn.innerHTML = `+ ${name}`;

@@ -704,7 +704,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2FhZHZ5bGVndm55aXZ5eGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MjcyNDMsImV4cCI6MjEwMjQwMzI0M30.xa1NCgPeedTQb1jE2qsWBYoF6HugsfopXw-ghvBpbi0';
     const DEFAULT_CONTRIBUTION = 3000000;
     // Same quick-add names as index.html
-    const PRESET_NAMES = ["An", "Bình", "Cường", "Dũng", "Giang", "Hương", "Khánh", "Linh", "Minh", "Nam", "Phúc", "Quỳnh", "Sơn", "Thảo", "Trang", "Tuấn", "Vy", "Yến", "Thư", "Thịnh", "Phong", "Huy", "Khoa", "Pi"];
+    const PRESET_NAMES = ["Thư", "An", "Thịnh", "Phong", "Huy", "Khoa", "Pi", "Trang"];
 
     let _sb = null;
     let currentRoomCode = null;
@@ -1150,7 +1150,7 @@
       const available = PRESET_NAMES.filter(name => !currentNames.has(name.toLowerCase()));
       container.innerHTML = available.length === 0
         ? '<span style="font-size:0.75rem; color:var(--text-muted); font-style:italic;">Đã dùng hết presets</span>'
-        : available.slice(0, 6).map(name => `<button class="preset-chip" onclick="addMemberWithName('${name}')">+ ${name}</button>`).join('');
+        : available.map(name => `<button class="preset-chip" onclick="addMemberWithName('${name}')">+ ${name}</button>`).join('');
     }
 
     // Delete right away and offer Undo instead of a blocking confirm
