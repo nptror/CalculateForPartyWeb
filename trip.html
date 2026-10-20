@@ -423,6 +423,10 @@
     .val-neg { color: var(--rose); font-weight: 700; }
     .empty { color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 0.75rem; }
     .hint { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; }
+    .guide-card { margin-bottom: 1rem; }
+    .guide-card summary { font-weight: 700; cursor: pointer; color: var(--text-secondary); }
+    .guide-card ol { padding-left: 1.2rem; margin-top: 0.75rem; font-size: 0.9rem; color: var(--text-secondary); }
+    .guide-card li { margin-bottom: 0.5rem; }
 
     @media (max-width: 768px) {
       .main-grid { grid-template-columns: 1fr; }
@@ -480,6 +484,16 @@
         <button class="btn btn-secondary" onclick="leaveRoom()">Ra phòng</button>
       </div>
     </div>
+
+    <details class="glass-card guide-card" id="guideCard">
+      <summary>📖 Cách dùng TripCalc (3 bước)</summary>
+      <ol>
+        <li><b>Góp quỹ:</b> nhập mức góp mỗi người (VD: 3tr), thêm tên. Dán nhiều tên cách nhau dấu phẩy cũng được. Người mới thêm mặc định <b>đã nộp</b>, chạm vào tên nếu ai chưa nộp.</li>
+        <li><b>Ghi khoản chi:</b> tab <b>👥 Chia đều</b> cho món cả nhóm dùng (thuê xe, ăn lẩu…). Tab <b>🧾 Tính riêng</b> cho món mỗi người một giá (VD: mỗi người một ly nước): điền giá từng người, ai không uống thì để trống.</li>
+        <li><b>Tất toán:</b> xem ai <span class="val-pos">nhận lại</span> / <span class="val-neg">nộp thêm</span>, bấm <b>📸 Xuất ảnh</b> để gửi vào nhóm chat.</li>
+      </ol>
+      <div class="hint">Ví dụ: 4 người góp 3tr, chi chung 10tr. A uống ly 30k thì A chịu 2.500.000 + 30.000 = 2.530.000 đ và được nhận lại 470.000 đ.</div>
+    </details>
 
     <div class="stats-grid">
       <div class="glass-card"><div class="stat-label">Đã thu quỹ</div><div class="stat-value" id="statFund">0 đ</div><div class="stat-sub" id="statPaidCount">0/0 người đã nộp</div></div>
@@ -725,6 +739,8 @@
     function enterRoom(code, loadedState) {
       currentRoomCode = code;
       state = normalizeState(loadedState);
+      // Open the guide only for an empty room; afterwards the user controls it
+      document.getElementById('guideCard').open = state.members.length === 0 && state.expenses.length === 0;
       window.history.replaceState({}, '', '?room=' + code);
       document.getElementById('lobbyScreen').classList.add('hidden');
       document.getElementById('mainApp').style.display = 'block';
