@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripCalc - Quỹ chuyến đi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    :root {
+      --bg-main: #0a060b;
+      --bg-gradient: radial-gradient(circle at 50% 50%, #170d14 0%, #050305 100%);
+      --card-bg: rgba(22, 15, 24, 0.45);
+      --card-border: rgba(217, 119, 6, 0.12);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #64748b;
+      --primary: #d97706;
+      --primary-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #92400e 100%);
+      --emerald: #34d399;
+      --rose: #fb7185;
+      --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-main);
+      background-image: var(--bg-gradient);
+      color: var(--text-primary);
+      font-family: var(--font);
+      min-height: 100vh;
+      line-height: 1.5;
+      padding: 1.5rem 1rem 4rem;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      backdrop-filter: blur(12px);
+    }
+    .card-title { font-weight: 700; margin-bottom: 0.9rem; color: var(--text-secondary); }
+    .form-input, select.form-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 0.92rem;
+      padding: 0.6rem 0.8rem;
+    }
+    select.form-input option { background: #170d14; }
+    .form-input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+    .form-row { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      font-family: var(--font);
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--primary-gradient); color: #1a0f00; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.06); color: var(--text-secondary); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .btn-mini { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0.2rem 0.4rem; }
+    .btn-mini:hover { color: var(--rose); }
+
+    /* Lobby */
+    #lobbyScreen { max-width: 420px; margin: 10vh auto 0; text-align: center; }
+    #lobbyScreen.hidden { display: none; }
+    .lobby-title { font-size: 2rem; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lobby-subtitle { color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .lobby-divider { color: var(--text-muted); font-size: 0.85rem; margin: 1rem 0; }
+    #lobbyError { color: var(--rose); font-size: 0.85rem; margin-top: 0.75rem; min-height: 1.2em; }
+    .lobby-link { display: inline-block; margin-top: 1rem; color: var(--text-muted); font-size: 0.85rem; }
+
+    /* App */
+    .room-bar { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .room-code-badge { font-weight: 800; letter-spacing: 2px; color: var(--primary); cursor: pointer; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+    .stat-label { color: var(--text-muted); font-size: 0.8rem; }
+    .stat-value { font-size: 1.3rem; font-weight: 800; }
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+    .col { display: flex; flex-direction: column; gap: 1rem; }
+    .row-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+      padding: 0.55rem 0.2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .row-item:last-child { border-bottom: none; }
+    .row-sub { color: var(--text-muted); font-size: 0.78rem; }
+    .contrib-input { width: 130px; text-align: right; padding: 0.35rem 0.6rem; }
+    .val-pos { color: var(--emerald); font-weight: 700; }
+    .val-neg { color: var(--rose); font-weight: 700; }
+    .empty { color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 0.75rem; }
+    .hint { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem; }
+
+    @media (max-width: 768px) {
+      .main-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .form-row.wrap { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== LOBBY ===== -->
+  <div id="lobbyScreen" class="glass-card">
+    <div class="lobby-title">TripCalc</div>
+    <div class="lobby-subtitle">Góp quỹ chuyến đi, món chung chia đều, món riêng ai nấy chịu 🧳</div>
+    <button class="btn btn-primary" style="width:100%" id="btnCreateRoom" onclick="createRoom()">✨ Tạo chuyến đi mới</button>
+    <div class="lobby-divider">hoặc vào chuyến đã có</div>
+    <div class="form-row">
+      <input type="text" id="txtRoomCode" class="form-input" placeholder="Mã phòng..." maxlength="6"
+        oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') joinRoom()">
+      <button class="btn btn-secondary" id="btnJoin" onclick="joinRoom()">Vào →</button>
+    </div>
+    <div id="lobbyError"></div>
+    <a class="lobby-link" href="index.html">← Về PartyCalc (chia tiền tiệc)</a>
+  </div>
+
+  <!-- ===== APP ===== -->
+  <div class="container" id="mainApp" style="display:none;">
+    <div class="room-bar">
+      <div>
+        <span style="color:var(--text-secondary)">Chuyến đi:</span>
+        <span class="room-code-badge" id="lblRoomCode" onclick="copyRoomLink()" title="Bấm để copy link">------</span>
+        <span class="row-sub" id="lblOnlineCount">· 1 người online</span>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-secondary" onclick="copyRoomLink()">Copy link</button>
+        <button class="btn btn-secondary" onclick="copyReport()">Copy bảng kê</button>
+        <button class="btn btn-secondary" onclick="leaveRoom()">Ra phòng</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="glass-card"><div class="stat-label">Tổng quỹ đã góp</div><div class="stat-value" id="statFund">0 đ</div></div>
+      <div class="glass-card"><div class="stat-label">Tổng đã chi</div><div class="stat-value" id="statSpent">0 đ</div></div>
+      <div class="glass-card"><div class="stat-label">Quỹ còn lại</div><div class="stat-value" id="statLeft">0 đ</div></div>
+    </div>
+
+    <div class="main-grid">
+      <div class="col">
+        <!-- Members -->
+        <div class="glass-card">
+          <div class="card-title">Thành viên & tiền góp quỹ</div>
+          <div class="form-row">
+            <input type="text" id="txtMemberName" class="form-input" placeholder="Tên thành viên..." onkeydown="if(event.key==='Enter') addMember()">
+            <button class="btn btn-primary" onclick="addMember()">Thêm</button>
+          </div>
+          <div id="memberList"></div>
+          <div class="hint">Sửa số tiền góp ngay trong ô. Gõ 3000 sẽ tự hiểu là 3.000.000.</div>
+        </div>
+
+        <!-- Add expense -->
+        <div class="glass-card">
+          <div class="card-title">Thêm khoản chi</div>
+          <div class="form-row wrap">
+            <input type="text" id="txtExpName" class="form-input" placeholder="Tên khoản (VD: Trà sữa)">
+            <input type="text" id="txtExpAmount" class="form-input" placeholder="Số tiền" inputmode="numeric" onkeydown="if(event.key==='Enter') addExpense()">
+          </div>
+          <div class="form-row wrap">
+            <label style="flex:1">
+              <span class="row-sub">Ai trả</span>
+              <select id="selPaidBy" class="form-input"></select>
+            </label>
+            <label style="flex:1">
+              <span class="row-sub">Dùng cho</span>
+              <select id="selFor" class="form-input"></select>
+            </label>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="addExpense()">+ Thêm khoản chi</button>
+          <div class="hint">Mỗi ly nước giá khác nhau thì nhập riêng từng ly, chọn "Dùng cho" là người uống.</div>
+        </div>
+      </div>
+
+      <div class="col">
+        <!-- Results -->
+        <div class="glass-card">
+          <div class="card-title">Tất toán</div>
+          <div id="resultList"></div>
+        </div>
+
+        <!-- Expense list -->
+        <div class="glass-card">
+          <div class="card-title">Các khoản đã chi</div>
+          <div id="expenseList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Same Supabase project/table as index.html; trip rooms are marked with state.type = 'trip'
+    const SUPABASE_URL = 'https://aegaadvylegvnyivyxdl.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlZ2FhZHZ5bGVndm55aXZ5eGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY4MjcyNDMsImV4cCI6MjEwMjQwMzI0M30.xa1NCgPeedTQb1jE2qsWBYoF6HugsfopXw-ghvBpbi0';
+    const DEFAULT_CONTRIBUTION = 3000000;
+
+    let _sb = null;
+    let currentRoomCode = null;
+    let realtimeChannel = null;
+    let isSyncing = false;
+    let state = { type: 'trip', members: [], expenses: [] };
+
+    // ==========================================
+    // CALCULATION
+    // ==========================================
+    // balance > 0: được nhận lại, balance < 0: phải nộp thêm
+    function computeBalances(s) {
+      const n = s.members.length;
+      const shared = s.expenses.filter(e => !e.forMember).reduce((sum, e) => sum + e.amount, 0);
+      const totalContributed = s.members.reduce((sum, m) => sum + m.contributed, 0);
+      const fundSpent = s.expenses.filter(e => e.paidBy === 'fund').reduce((sum, e) => sum + e.amount, 0);
+      const totalSpent = s.expenses.reduce((sum, e) => sum + e.amount, 0);
+
+      const rows = s.members.map(m => {
+        const personal = s.expenses.filter(e => e.forMember === m.id).reduce((sum, e) => sum + e.amount, 0);
+        const outOfPocket = s.expenses.filter(e => e.paidBy === m.id).reduce((sum, e) => sum + e.amount, 0);
+        const share = (n > 0 ? shared / n : 0) + personal;
+        return { id: m.id, name: m.name, contributed: m.contributed, personal, outOfPocket, share, balance: m.contributed + outOfPocket - share };
+      });
+      return { rows, totalContributed, totalSpent, fundLeft: totalContributed - fundSpent };
+    }
+
+    // Self-check: 4 người góp 3tr, chi chung 10tr từ quỹ, mỗi người 1 ly nước khác giá
+    (function selfCheck() {
+      const mk = (id) => ({ id, name: id, contributed: 3000000 });
+      const r = computeBalances({
+        members: ['A', 'B', 'C', 'D'].map(mk),
+        expenses: [
+          { amount: 10000000, paidBy: 'fund', forMember: null },
+          { amount: 30000, paidBy: 'fund', forMember: 'A' },
+          { amount: 45000, paidBy: 'fund', forMember: 'B' },
+          { amount: 50000, paidBy: 'fund', forMember: 'C' },
+          { amount: 25000, paidBy: 'A', forMember: 'D' }
+        ]
+      });
+      const b = Object.fromEntries(r.rows.map(x => [x.id, x.balance]));
+      console.assert(b.A === 495000 && b.B === 455000 && b.C === 450000 && b.D === 475000, 'trip balances wrong', b);
+      console.assert(r.rows.reduce((s, x) => s + x.balance, 0) === r.fundLeft, 'balances must sum to fund left');
+    })();
+
+    // ==========================================
+    // LOBBY
+    // ==========================================
+    window.addEventListener('DOMContentLoaded', () => {
+      try { _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (e) { console.error(e); }
+      if (!_sb) { setLobbyError('⚠️ Không tải được Supabase SDK. Kiểm tra mạng và reload trang.'); return; }
+      formatCurrencyInput(document.getElementById('txtExpAmount'));
+      const roomFromUrl = new URLSearchParams(window.location.search).get('room');
+      if (roomFromUrl && roomFromUrl.length === 6) {
+        document.getElementById('txtRoomCode').value = roomFromUrl.toUpperCase();
+        joinRoom(roomFromUrl.toUpperCase());
+      }
+    });
+
+    function setLobbyError(msg) { document.getElementById('lobbyError').textContent = msg; }
+
+    function generateRoomCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let code = '';
+      for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+      return code;
+    }
+
+    async function createRoom() {
+      if (!_sb) return;
+      const btn = document.getElementById('btnCreateRoom');
+      btn.disabled = true;
+      setLobbyError('');
+      const code = generateRoomCode();
+      const newState = { type: 'trip', members: [], expenses: [] };
+      try {
+        const { error } = await _sb.from('party_rooms').insert({ room_code: code, state: newState, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        enterRoom(code, newState);
+      } catch (err) {
+        console.error(err);
+        setLobbyError('Không tạo được chuyến đi: ' + err.message);
+      }
+      btn.disabled = false;
+    }
+
+    async function joinRoom(codeOverride) {
+      if (!_sb) return;
+      const code = codeOverride || document.getElementById('txtRoomCode').value.trim().toUpperCase();
+      if (code.length !== 6) { setLobbyError('Mã phòng phải có đúng 6 ký tự!'); return; }
+      setLobbyError('');
+      const btn = document.getElementById('btnJoin');
+      btn.disabled = true;
+      try {
+        const { data, error } = await _sb.from('party_rooms').select('state').eq('room_code', code).single();
+        if (error || !data) setLobbyError('Không tìm thấy phòng "' + code + '"!');
+        else if (data.state.type !== 'trip') window.location.href = 'index.html?room=' + code;
+        else enterRoom(code, data.state);
+      } catch (err) {
+        console.error(err);
+        setLobbyError('Lỗi kết nối: ' + err.message);
+      }
+      btn.disabled = false;
+    }
+
+    function enterRoom(code, loadedState) {
+      currentRoomCode = code;
+      state = loadedState;
+      window.history.replaceState({}, '', '?room=' + code);
+      document.getElementById('lobbyScreen').classList.add('hidden');
+      document.getElementById('mainApp').style.display = 'block';
+      document.getElementById('lblRoomCode').textContent = code;
+      subscribeToChannel(code);
+      render();
+    }
+
+    function leaveRoom() {
+      if (!confirm('Rời chuyến đi? Dữ liệu vẫn được lưu trên cloud.')) return;
+      if (realtimeChannel) { _sb.removeChannel(realtimeChannel); realtimeChannel = null; }
+      currentRoomCode = null;
+      state = { type: 'trip', members: [], expenses: [] };
+      window.history.replaceState({}, '', window.location.pathname);
+      document.getElementById('txtRoomCode').value = '';
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('lobbyScreen').classList.remove('hidden');
+    }
+
+    // ==========================================
+    // SUPABASE REALTIME & SAVE
+    // ==========================================
+    function subscribeToChannel(code) {
+      if (realtimeChannel) _sb.removeChannel(realtimeChannel);
+      realtimeChannel = _sb.channel('party:' + code, {
+        config: { presence: { key: 'user_' + Math.random().toString(36).substr(2, 6) } }
+      });
+      realtimeChannel
+        .on('presence', { event: 'sync' }, () => {
+          document.getElementById('lblOnlineCount').textContent = '· ' + Object.keys(realtimeChannel.presenceState()).length + ' người online';
+        })
+        .on('broadcast', { event: 'state_update' }, ({ payload }) => {
+          if (!payload || !payload.state) return;
+          isSyncing = true;
+          state = payload.state;
+          render();
+          isSyncing = false;
+        })
+        .subscribe(async (status) => {
+          if (status === 'SUBSCRIBED') await realtimeChannel.track({ joined_at: new Date().toISOString() });
+        });
+    }
+
+    let saveDebounceTimer = null;
+    function save() {
+      if (!currentRoomCode) return;
+      clearTimeout(saveDebounceTimer);
+      saveDebounceTimer = setTimeout(async () => {
+        try {
+          const { error } = await _sb.from('party_rooms').upsert({ room_code: currentRoomCode, state, updated_at: new Date().toISOString() });
+          if (error) throw error;
+          if (realtimeChannel && !isSyncing) {
+            realtimeChannel.send({ type: 'broadcast', event: 'state_update', payload: { state } });
+          }
+        } catch (err) {
+          console.error('Supabase save error', err);
+          alert('Lưu không thành công: ' + err.message);
+        }
+      }, 400);
+    }
+
+    function copyRoomLink() {
+      const link = window.location.origin + window.location.pathname + '?room=' + currentRoomCode;
+      navigator.clipboard.writeText(link).then(() => alert('Đã copy link chuyến đi! 🔗')).catch(() => prompt('Link:', link));
+    }
+
+    // ==========================================
+    // HELPERS
+    // ==========================================
+    function formatMoney(val) {
+      return new Intl.NumberFormat('vi-VN').format(Math.round(val)) + ' đ';
+    }
+
+    // Typing "30" means 30.000, same convention as index.html
+    function parseMoney(str) {
+      let num = parseInt(String(str).replace(/\D/g, ''), 10) || 0;
+      if (num > 0 && num < 1000) num *= 1000;
+      return num;
+    }
+
+    function formatCurrencyInput(input) {
+      input.addEventListener('input', (e) => {
+        const value = e.target.value.replace(/\D/g, '');
+        e.target.value = value ? parseInt(value, 10).toLocaleString('vi-VN') : '';
+      });
+    }
+
+    function esc(str) {
+      return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function memberName(id) {
+      const m = state.members.find(x => x.id === id);
+      return m ? m.name : '(đã xóa)';
+    }
+
+    // ==========================================
+    // ACTIONS
+    // ==========================================
+    function addMember() {
+      const input = document.getElementById('txtMemberName');
+      const name = input.value.trim();
+      if (!name) return;
+      if (state.members.some(m => m.name.toLowerCase() === name.toLowerCase())) { alert('Tên đã tồn tại!'); return; }
+      state.members.push({ id: 'member_' + Date.now(), name, contributed: DEFAULT_CONTRIBUTION });
+      input.value = '';
+      input.focus();
+      save();
+      render();
+    }
+
+    function updateContribution(id, value) {
+      const m = state.members.find(x => x.id === id);
+      if (!m) return;
+      m.contributed = parseMoney(value);
+      save();
+      render();
+    }
+
+    function deleteMember(id) {
+      if (state.expenses.some(e => e.paidBy === id || e.forMember === id)) {
+        alert('Người này còn khoản chi liên quan. Xóa các khoản đó trước.');
+        return;
+      }
+      if (!confirm('Xóa ' + memberName(id) + '?')) return;
+      state.members = state.members.filter(m => m.id !== id);
+      save();
+      render();
+    }
+
+    function addExpense() {
+      const txtName = document.getElementById('txtExpName');
+      const txtAmount = document.getElementById('txtExpAmount');
+      const amount = parseMoney(txtAmount.value);
+      if (!amount) { alert('Nhập số tiền!'); txtAmount.focus(); return; }
+      if (state.members.length === 0) { alert('Thêm thành viên trước!'); return; }
+      const forMember = document.getElementById('selFor').value || null;
+      state.expenses.push({
+        id: 'exp_' + Date.now(),
+        name: txtName.value.trim() || 'Khoản chi',
+        amount,
+        paidBy: document.getElementById('selPaidBy').value,
+        forMember
+      });
+      txtAmount.value = '';
+      // Keep the name so several drinks can be entered back to back
+      txtAmount.focus();
+      save();
+      render();
+    }
+
+    function deleteExpense(id) {
+      state.expenses = state.expenses.filter(e => e.id !== id);
+      save();
+      render();
+    }
+
+    function copyReport() {
+      const r = computeBalances(state);
+      const lines = [
+        '🧳 TẤT TOÁN CHUYẾN ĐI ' + currentRoomCode,
+        'Tổng quỹ: ' + formatMoney(r.totalContributed) + ' | Đã chi: ' + formatMoney(r.totalSpent) + ' | Quỹ còn: ' + formatMoney(r.fundLeft),
+        ''
+      ];
+      r.rows.forEach(x => {
+        const verdict = x.balance >= 0 ? 'nhận lại ' + formatMoney(x.balance) : 'nộp thêm ' + formatMoney(-x.balance);
+        lines.push('• ' + x.name + ': chịu ' + formatMoney(x.share) + ' → ' + verdict);
+      });
+      navigator.clipboard.writeText(lines.join('\n')).then(() => alert('Đã copy bảng kê!')).catch(() => prompt('Bảng kê:', lines.join('\n')));
+    }
+
+    // ==========================================
+    // RENDER
+    // ==========================================
+    function render() {
+      const r = computeBalances(state);
+
+      document.getElementById('statFund').textContent = formatMoney(r.totalContributed);
+      document.getElementById('statSpent').textContent = formatMoney(r.totalSpent);
+      document.getElementById('statLeft').textContent = formatMoney(r.fundLeft);
+
+      // Members
+      document.getElementById('memberList').innerHTML = state.members.length === 0
+        ? '<div class="empty">Chưa có ai. Thêm tên ở trên!</div>'
+        : state.members.map(m => `
+          <div class="row-item">
+            <span>${esc(m.name)}</span>
+            <span style="display:flex; align-items:center; gap:0.25rem;">
+              <input class="form-input contrib-input" inputmode="numeric" aria-label="Tiền góp của ${esc(m.name)}"
+                value="${m.contributed.toLocaleString('vi-VN')}" onchange="updateContribution('${m.id}', this.value)">
+              <button class="btn-mini" onclick="deleteMember('${m.id}')" title="Xóa" aria-label="Xóa ${esc(m.name)}">✕</button>
+            </span>
+          </div>`).join('');
+
+      // Selects (keep current choice across re-renders)
+      const selPaidBy = document.getElementById('selPaidBy');
+      const selFor = document.getElementById('selFor');
+      const prevPaidBy = selPaidBy.value, prevFor = selFor.value;
+      const memberOptions = state.members.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join('');
+      selPaidBy.innerHTML = '<option value="fund">💰 Quỹ chung</option>' + memberOptions;
+      selFor.innerHTML = '<option value="">👥 Cả nhóm (chia đều)</option>' + memberOptions;
+      if ([...selPaidBy.options].some(o => o.value === prevPaidBy)) selPaidBy.value = prevPaidBy;
+      if ([...selFor.options].some(o => o.value === prevFor)) selFor.value = prevFor;
+
+      // Results
+      document.getElementById('resultList').innerHTML = r.rows.length === 0
+        ? '<div class="empty">Chưa có dữ liệu.</div>'
+        : r.rows.map(x => `
+          <div class="row-item">
+            <div>
+              <div>${esc(x.name)}</div>
+              <div class="row-sub">Góp ${formatMoney(x.contributed)}${x.outOfPocket ? ' + tự trả ' + formatMoney(x.outOfPocket) : ''} · chịu ${formatMoney(x.share)}${x.personal ? ' (riêng ' + formatMoney(x.personal) + ')' : ''}</div>
+            </div>
+            <div class="${x.balance >= 0 ? 'val-pos' : 'val-neg'}" style="text-align:right">
+              ${x.balance >= 0 ? 'Nhận lại' : 'Nộp thêm'}<br>${formatMoney(Math.abs(x.balance))}
+            </div>
+          </div>`).join('');
+
+      // Expenses (newest first)
+      document.getElementById('expenseList').innerHTML = state.expenses.length === 0
+        ? '<div class="empty">Chưa có khoản chi nào.</div>'
+        : state.expenses.slice().reverse().map(e => `
+          <div class="row-item">
+            <div>
+              <div>${esc(e.name)} · <b>${formatMoney(e.amount)}</b></div>
+              <div class="row-sub">${e.paidBy === 'fund' ? 'Quỹ trả' : esc(memberName(e.paidBy)) + ' tự trả'} · ${e.forMember ? 'riêng ' + esc(memberName(e.forMember)) : 'chia đều'}</div>
+            </div>
+            <button class="btn-mini" onclick="deleteExpense('${e.id}')" title="Xóa" aria-label="Xóa khoản ${esc(e.name)}">✕</button>
+          </div>`).join('');
+    }
+  </script>
+</body>
+</html>

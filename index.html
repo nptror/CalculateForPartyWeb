@@ -1249,6 +1249,7 @@
         <button class="lobby-btn-join" onclick="joinRoom()">Vào phòng →</button>
       </div>
       <div id="lobbyError"></div>
+      <a href="trip.html" style="display:inline-block; margin-top:1rem; color:var(--text-muted); font-size:0.85rem;">🧳 Đi chơi có góp quỹ? Mở TripCalc →</a>
     </div>
   </div>
 
@@ -1684,6 +1685,8 @@
           joinBtn.disabled = false;
           return;
         }
+        // Trip rooms share the table but have a different state shape
+        if (data.state.type === 'trip') { window.location.href = 'trip.html?room=' + code; return; }
         await enterRoom(code, data.state);
       } catch (err) {
         console.error(err);
