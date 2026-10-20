@@ -1058,6 +1058,26 @@
     .lobby-btn-create:hover { opacity: 0.88; transform: translateY(-1px); }
     .lobby-btn-create:active { transform: scale(0.98); }
 
+    .mode-switch {
+      display: flex;
+      gap: 0.25rem;
+      padding: 0.25rem;
+      border-radius: 0.75rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(217,119,6,0.15);
+      margin: -1rem 0 1.5rem;
+    }
+    .mode-switch a {
+      flex: 1;
+      padding: 0.55rem;
+      border-radius: 0.6rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 700;
+      transition: var(--transition-base);
+    }
+    .mode-switch a.active { background: var(--primary-gradient); color: #fff; }
+
     .lobby-divider {
       display: flex;
       align-items: center;
@@ -1227,6 +1247,10 @@
       </svg>
       <div class="lobby-title">PartyCalc</div>
       <div class="lobby-subtitle">Cam-pu-chia tiền tiệc cùng bạn bè theo thời gian thực 🍻</div>
+      <nav class="mode-switch">
+        <a href="index.html" class="active" aria-current="page">🍻 Tiệc</a>
+        <a href="trip.html">🧳 Trip</a>
+      </nav>
 
       <!-- Create Room -->
       <button class="lobby-btn-create" id="btnCreateRoom" onclick="createRoom()">
@@ -1248,9 +1272,7 @@
         >
         <button class="lobby-btn-join" onclick="joinRoom()">Vào phòng →</button>
       </div>
-      <div id="lobbyError"></div>
-      <a href="trip.html" style="display:inline-block; margin-top:1rem; color:var(--text-muted); font-size:0.85rem;">🧳 Đi chơi có góp quỹ? Mở TripCalc →</a>
-    </div>
+      <div id="lobbyError"></div>    </div>
   </div>
 
 
