@@ -1008,9 +1008,8 @@
       padding: 2.5rem 2rem;
       width: 100%;
       max-width: 420px;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(217,119,6,0.08);
+      background: #140d13;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
       text-align: center;
     }
 
@@ -1019,15 +1018,11 @@
       height: 64px;
       margin: 0 auto 1rem;
       color: #fbbf24;
-      filter: drop-shadow(0 4px 12px rgba(217,119,6,0.4));
     }
     .lobby-title {
       font-size: 2rem;
       font-weight: 800;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #fbbf24;
       margin-bottom: 0.25rem;
     }
     .lobby-subtitle {
@@ -1046,7 +1041,6 @@
       border-radius: 0.75rem;
       cursor: pointer;
       letter-spacing: 0.02em;
-      box-shadow: 0 4px 20px rgba(217,119,6,0.35);
       transition: var(--transition-base);
       font-family: var(--font);
     }
@@ -1071,7 +1065,7 @@
       font-weight: 700;
       transition: var(--transition-base);
     }
-    .mode-switch a.active { background: var(--primary-gradient); color: #fff; }
+    .mode-switch a.active { background: #f59e0b; color: #0b0600; }
 
     .lobby-divider {
       display: flex;
@@ -1243,8 +1237,8 @@
       <div class="lobby-title">PartyCalc</div>
       <div class="lobby-subtitle">Cam-pu-chia tiền tiệc cùng bạn bè theo thời gian thực 🍻</div>
       <nav class="mode-switch">
-        <a href="index.html" class="active" aria-current="page">🍻 Tiệc</a>
-        <a href="trip.html">🧳 Trip</a>
+        <a href="index.html" class="active" aria-current="page">Tiệc</a>
+        <a href="trip.html">Trip</a>
       </nav>
 
       <!-- Create Room -->

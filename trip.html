@@ -12,12 +12,14 @@
     :root {
       --bg-main: #0a060b;
       --bg-gradient: radial-gradient(circle at 50% 50%, #170d14 0%, #050305 100%);
-      --card-bg: rgba(22, 15, 24, 0.45);
-      --card-border: rgba(217, 119, 6, 0.12);
+      --card-bg: #140d13;
+      --card-border: rgba(217, 119, 6, 0.22);
       --text-primary: #f8fafc;
       --text-secondary: #cbd5e1;
       --text-muted: #64748b;
       --primary: #d97706;
+      --accent: #f59e0b;
+      --accent-hover: #fbbf24;
       --primary-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #92400e 100%);
       --emerald: #34d399;
       --rose: #fb7185;
@@ -48,7 +50,6 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: var(--space-6);
-      backdrop-filter: blur(12px);
     }
     .card-title {
       font-size: 1.2rem;
@@ -62,13 +63,9 @@
       padding-bottom: var(--space-3);
     }
     .card-title span.count-badge {
-      font-size: 0.72rem;
-      background: rgba(217, 119, 6, 0.15);
-      color: #f59e0b;
-      padding: var(--space-1) var(--space-2);
-      border-radius: 99px;
-      font-weight: 700;
-      border: 1px solid rgba(217, 119, 6, 0.2);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 600;
     }
     .form-input {
       width: 100%;
@@ -110,15 +107,10 @@
       white-space: nowrap;
     }
     .btn-primary {
-      background: var(--primary-gradient);
+      background: var(--accent);
       color: #0b0600;
-      box-shadow: 0 4px 15px rgba(217, 119, 6, 0.25);
     }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
-      filter: brightness(1.1);
-    }
+    .btn-primary:hover { background: var(--accent-hover); }
     .btn-primary:active { transform: translateY(0); }
     .btn-secondary {
       background: rgba(255, 255, 255, 0.03);
@@ -206,7 +198,7 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: var(--primary-gradient);
+      background: var(--accent);
       color: #0c080d;
       display: flex;
       align-items: center;
@@ -216,15 +208,9 @@
     }
     .member-name-text { font-weight: 600; font-size: 0.95rem; }
     .member-spent-badge {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: var(--text-secondary);
-      background: rgba(0, 0, 0, 0.25);
-      padding: 0 var(--space-2);
-      border-radius: 6px;
-      font-family: monospace;
       margin-top: var(--space-1);
-      display: inline-block;
-      border: 1px solid rgba(255, 255, 255, 0.03);
     }
     .member-actions { display: flex; gap: var(--space-1); opacity: 0.4; transition: var(--transition-base); }
     .member-item:hover .member-actions { opacity: 1; }
@@ -247,14 +233,14 @@
       background: none; border: none; color: inherit; font: inherit; text-align: left; cursor: pointer; padding: 0;
     }
     .member-item.paid { background: rgba(5, 150, 105, 0.08); border-color: rgba(52, 211, 153, 0.3); }
-    .member-item.paid .member-avatar { background: linear-gradient(135deg, #34d399 0%, #059669 100%); }
+    .member-item.paid .member-avatar { background: var(--emerald); }
     .member-item.paid .member-spent-badge { color: var(--emerald); }
     .fund-row {
       display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
       padding: var(--space-2) var(--space-4); border-radius: 12px;
       background: rgba(217, 119, 6, 0.06); border: 1px solid rgba(217, 119, 6, 0.15);
     }
-    .fund-row label { font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); }
+    .fund-row label { display: inline-flex; align-items: center; gap: var(--space-2); font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); }
     .fund-row .form-input { width: 150px; text-align: right; font-weight: 700; }
     .stat-sub { color: var(--text-muted); font-size: 0.78rem; }
     .no-records-msg { color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 0.75rem; }
@@ -281,9 +267,8 @@
       padding: 2.5rem 2rem;
       width: 100%;
       max-width: 420px;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(217,119,6,0.08);
+      background: #140d13;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
       text-align: center;
     }
     .lobby-logo {
@@ -291,15 +276,11 @@
       height: 64px;
       margin: 0 auto 1rem;
       color: #fbbf24;
-      filter: drop-shadow(0 4px 12px rgba(217,119,6,0.4));
     }
     .lobby-title {
       font-size: 2rem;
       font-weight: 800;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #fbbf24;
       margin-bottom: 0.25rem;
     }
     .lobby-subtitle {
@@ -318,7 +299,6 @@
       border-radius: 0.75rem;
       cursor: pointer;
       letter-spacing: 0.02em;
-      box-shadow: 0 4px 20px rgba(217,119,6,0.35);
       transition: var(--transition-base);
       font-family: var(--font);
     }
@@ -342,7 +322,7 @@
       font-weight: 700;
       transition: var(--transition-base);
     }
-    .mode-switch a.active { background: var(--primary-gradient); color: #fff; }
+    .mode-switch a.active { background: #f59e0b; color: #0b0600; }
     /* Same look for the expense tabs, which are buttons instead of links */
     .mode-switch button {
       flex: 1;
@@ -356,8 +336,12 @@
       font-weight: 700;
       cursor: pointer;
       transition: var(--transition-base);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
     }
-    .mode-switch button.active { background: var(--primary-gradient); color: #fff; }
+    .mode-switch button.active { background: var(--accent); color: #0b0600; }
     .expense-tabs { margin: 0 0 1rem; }
     .personal-row {
       display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
@@ -464,8 +448,8 @@
       <div class="lobby-title">TripCalc</div>
       <div class="lobby-subtitle">Góp quỹ chuyến đi cùng bạn bè, món riêng ai nấy chịu 🧳</div>
       <nav class="mode-switch">
-        <a href="index.html">🍻 Tiệc</a>
-        <a href="trip.html" class="active" aria-current="page">🧳 Trip</a>
+        <a href="index.html">Tiệc</a>
+        <a href="trip.html" class="active" aria-current="page">Trip</a>
       </nav>
 
       <button class="lobby-btn-create" id="btnCreateRoom" onclick="createRoom()">✨ Tạo chuyến đi mới</button>
@@ -492,17 +476,17 @@
       <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
         <button class="btn btn-secondary" onclick="copyRoomLink()">Copy link</button>
         <button class="btn btn-secondary" onclick="copyReport()">Copy bảng kê</button>
-        <button class="btn btn-primary" onclick="exportImage()">📸 Xuất ảnh</button>
+        <button class="btn btn-primary" onclick="exportImage()"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Xuất ảnh</button>
         <button class="btn btn-secondary" onclick="leaveRoom()">Ra phòng</button>
       </div>
     </div>
 
     <details class="glass-card guide-card" id="guideCard">
-      <summary>📖 Cách dùng TripCalc (3 bước)</summary>
+      <summary>Cách dùng TripCalc (3 bước)</summary>
       <ol>
         <li><b>Góp quỹ:</b> nhập mức góp mỗi người (VD: 3tr), thêm tên. Dán nhiều tên cách nhau dấu phẩy cũng được. Người mới thêm mặc định <b>đã nộp</b>, chạm vào tên nếu ai chưa nộp.</li>
-        <li><b>Ghi khoản chi:</b> tab <b>👥 Chia đều</b> cho món cả nhóm dùng (thuê xe, ăn lẩu…). Tab <b>🧾 Tính riêng</b> cho món mỗi người một giá (VD: mỗi người một ly nước): điền giá từng người, ai không uống thì để trống.</li>
-        <li><b>Tất toán:</b> xem ai <span class="val-pos">nhận lại</span> / <span class="val-neg">nộp thêm</span>, bấm <b>📸 Xuất ảnh</b> để gửi vào nhóm chat.</li>
+        <li><b>Ghi khoản chi:</b> tab <b>Chia đều</b> cho món cả nhóm dùng (thuê xe, ăn lẩu…). Tab <b>Tính riêng</b> cho món mỗi người một giá (VD: mỗi người một ly nước): điền giá từng người, ai không uống thì để trống.</li>
+        <li><b>Tất toán:</b> xem ai <span class="val-pos">nhận lại</span> / <span class="val-neg">nộp thêm</span>, bấm <b>Xuất ảnh</b> để gửi vào nhóm chat.</li>
       </ol>
       <div class="hint">Ví dụ: 4 người góp 3tr, chi chung 10tr. A uống ly 30k thì A chịu 2.500.000 + 30.000 = 2.530.000 đ và được nhận lại 470.000 đ.</div>
     </details>
@@ -523,7 +507,7 @@
           </div>
 
           <div class="fund-row">
-            <label for="txtFundPerPerson">💰 Mỗi người góp</label>
+            <label for="txtFundPerPerson"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg> Mỗi người góp</label>
             <input type="text" id="txtFundPerPerson" class="form-input" placeholder="VD: 3tr" onchange="updateFundPerPerson(this.value)">
           </div>
 
@@ -555,8 +539,8 @@
         <div class="glass-card">
           <div class="card-title">Thêm khoản chi</div>
           <div class="mode-switch expense-tabs" role="tablist">
-            <button id="tabShared" class="active" role="tab" aria-selected="true" onclick="setExpenseTab('shared')">👥 Chia đều</button>
-            <button id="tabPersonal" role="tab" aria-selected="false" onclick="setExpenseTab('personal')">🧾 Tính riêng</button>
+            <button id="tabShared" class="active" role="tab" aria-selected="true" onclick="setExpenseTab('shared')"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Chia đều</button>
+            <button id="tabPersonal" role="tab" aria-selected="false" onclick="setExpenseTab('personal')"><svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></svg> Tính riêng</button>
           </div>
 
           <!-- Tab 1: one shared expense split across everyone -->
