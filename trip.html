@@ -16,7 +16,7 @@
       --card-border: rgba(217, 119, 6, 0.22);
       --text-primary: #f8fafc;
       --text-secondary: #cbd5e1;
-      --text-muted: #64748b;
+      --text-muted: #8b97a8;
       --primary: #d97706;
       --accent: #f59e0b;
       --accent-hover: #fbbf24;
@@ -212,15 +212,16 @@
       color: var(--text-secondary);
       margin-top: var(--space-1);
     }
-    .member-actions { display: flex; gap: var(--space-1); opacity: 0.4; transition: var(--transition-base); }
-    .member-item:hover .member-actions { opacity: 1; }
+    .member-actions { display: flex; gap: var(--space-1); }
     .action-btn-mini {
       background: transparent;
       border: none;
       color: var(--text-muted);
       cursor: pointer;
       padding: 0.25rem;
-      border-radius: 6px;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 8px;
       transition: var(--transition-base);
       display: flex;
       align-items: center;
@@ -315,6 +316,10 @@
     }
     .mode-switch a {
       flex: 1;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: var(--space-2);
       border-radius: 0.6rem;
       color: var(--text-muted);
@@ -326,6 +331,7 @@
     /* Same look for the expense tabs, which are buttons instead of links */
     .mode-switch button {
       flex: 1;
+      min-height: 44px;
       padding: var(--space-2);
       border-radius: 0.6rem;
       color: var(--text-muted);
@@ -430,6 +436,90 @@
       .stats-grid, .main-grid, .col { gap: var(--space-4); }
       .room-bar, .stats-grid, .guide-card { margin-bottom: var(--space-4); }
     }
+    /* Keyboard focus ring for every control (inputs keep their own ring) */
+    button:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .btn-sm { padding: var(--space-2) var(--space-3); font-size: 0.82rem; border-radius: 8px; }
+    .btn-danger {
+      background: rgba(225, 29, 72, 0.15);
+      border: 1px solid rgba(251, 113, 133, 0.45);
+      color: #fda4af;
+    }
+    .btn-danger:hover { background: rgba(225, 29, 72, 0.25); }
+    .link-btn {
+      background: none; border: none; padding: var(--space-1);
+      color: var(--accent); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer;
+    }
+
+    /* Save status in the room bar */
+    .save-status { font-size: 0.8rem; color: var(--text-muted); margin-left: var(--space-2); }
+    .save-status[data-status="saved"] { color: var(--emerald); }
+    .save-status[data-status="error"] { color: var(--rose); }
+
+    /* Expense list: whole row opens the edit dialog */
+    .row-main {
+      flex: 1; min-width: 0; min-height: 44px;
+      display: flex; flex-direction: column; justify-content: center; gap: 2px;
+      background: none; border: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+      padding: var(--space-1) 0;
+    }
+    .row-main:hover .row-title { text-decoration: underline; }
+    .row-main-static { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .row-sub.clamp { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .expense-group { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+    .expense-group:last-child { border-bottom: none; }
+    .expense-group > summary { list-style: none; cursor: pointer; border-bottom: none; min-height: 44px; }
+    .expense-group > summary::-webkit-details-marker { display: none; }
+    .group-toggle::after { content: ' ▾'; }
+    .expense-group[open] .group-toggle::after { content: ' ▴'; }
+    .group-items {
+      margin: 0 0 var(--space-3) var(--space-4);
+      padding-left: var(--space-3);
+      border-left: 2px solid rgba(217, 119, 6, 0.25);
+    }
+    .group-items .btn-sm { margin-top: var(--space-2); }
+
+    /* Toasts */
+    .toast-container {
+      position: fixed; left: 50%; bottom: var(--space-6); transform: translateX(-50%);
+      z-index: 2000; display: flex; flex-direction: column; gap: var(--space-2);
+      width: min(480px, calc(100% - var(--space-8)));
+    }
+    .toast {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+      padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4); min-height: 48px;
+      background: #241a22; border: 1px solid rgba(217, 119, 6, 0.35); border-radius: 12px;
+      color: var(--text-primary); font-size: 0.9rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    .toast-error { border-color: rgba(251, 113, 133, 0.6); }
+    .toast-action {
+      flex-shrink: 0; min-height: 36px; padding: 0 var(--space-3);
+      background: none; border: 1px solid rgba(245, 158, 11, 0.5); border-radius: 8px;
+      color: var(--accent); font: inherit; font-weight: 700; cursor: pointer;
+    }
+
+    /* Shared dialog (replaces prompt/confirm) */
+    .app-dialog {
+      width: min(420px, calc(100% - var(--space-8)));
+      margin: auto;
+      padding: var(--space-6);
+      background: #1a1219; color: var(--text-primary);
+      border: 1px solid rgba(217, 119, 6, 0.35); border-radius: 16px;
+    }
+    .app-dialog::backdrop { background: rgba(0, 0, 0, 0.65); }
+    .app-dialog h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: var(--space-2); }
+    .app-dialog .dialog-message { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: var(--space-4); }
+    .dialog-field { display: flex; flex-direction: column; gap: var(--space-1); margin-bottom: var(--space-3); font-size: 0.85rem; color: var(--text-secondary); }
+    .dialog-error { color: #fda4af; font-size: 0.85rem; min-height: 1.2em; margin-bottom: var(--space-2); }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); }
+
+    @media (max-width: 768px) {
+      .preset-chip { min-height: 44px; padding: 0 var(--space-3); }
+      .dialog-actions .btn { flex: 1; }
+    }
   </style>
 </head>
 <body>
@@ -472,6 +562,7 @@
         <span style="color:var(--text-secondary)">Chuyến đi:</span>
         <span class="room-code-badge" id="lblRoomCode" onclick="copyRoomLink()" title="Bấm để copy link">------</span>
         <span class="row-sub" id="lblOnlineCount">· 1 người online</span>
+        <span class="save-status" id="saveStatus" aria-live="polite"></span>
       </div>
       <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
         <button class="btn btn-secondary" onclick="copyRoomLink()">Copy link</button>
@@ -580,6 +671,21 @@
       </div>
     </div>
   </div>
+
+  <div class="toast-container" id="toastContainer" role="status" aria-live="polite"></div>
+
+  <dialog class="app-dialog" id="appDialog" aria-labelledby="dlgTitle">
+    <form id="dlgForm" novalidate>
+      <h2 id="dlgTitle"></h2>
+      <p class="dialog-message" id="dlgMessage"></p>
+      <div id="dlgFields"></div>
+      <p class="dialog-error" id="dlgError" role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-secondary" id="dlgCancel">Hủy</button>
+        <button type="submit" class="btn btn-primary" id="dlgOk">Lưu</button>
+      </div>
+    </form>
+  </dialog>
 
   <script>
     // Same Supabase project/table as index.html; trip rooms are marked with state.type = 'trip'
@@ -742,11 +848,13 @@
       document.getElementById('mainApp').style.display = 'block';
       document.getElementById('lblRoomCode').textContent = code;
       subscribeToChannel(code);
+      setSaveStatus('saved');
       render();
     }
 
-    function leaveRoom() {
-      if (!confirm('Rời chuyến đi? Dữ liệu vẫn được lưu trên cloud.')) return;
+    async function leaveRoom() {
+      const ok = await openDialog({ title: 'Rời chuyến đi?', message: 'Dữ liệu vẫn được lưu trên cloud. Mở lại bằng mã phòng hoặc link.', okText: 'Rời phòng' });
+      if (!ok) return;
       if (realtimeChannel) { _sb.removeChannel(realtimeChannel); realtimeChannel = null; }
       currentRoomCode = null;
       state = { type: 'trip', fundPerPerson: DEFAULT_CONTRIBUTION, members: [], expenses: [] };
@@ -783,6 +891,7 @@
     let saveDebounceTimer = null;
     function save() {
       if (!currentRoomCode) return;
+      setSaveStatus('saving');
       clearTimeout(saveDebounceTimer);
       saveDebounceTimer = setTimeout(async () => {
         try {
@@ -791,16 +900,20 @@
           if (realtimeChannel && !isSyncing) {
             realtimeChannel.send({ type: 'broadcast', event: 'state_update', payload: { state } });
           }
+          setSaveStatus('saved');
         } catch (err) {
           console.error('Supabase save error', err);
-          alert('Lưu không thành công: ' + err.message);
+          setSaveStatus('error');
+          showToast('Không lưu được lên cloud: ' + err.message + '. Bấm "Thử lại" trên thanh phòng.', { type: 'error', duration: 8000 });
         }
       }, 400);
     }
 
     function copyRoomLink() {
       const link = window.location.origin + window.location.pathname + '?room=' + currentRoomCode;
-      navigator.clipboard.writeText(link).then(() => alert('Đã copy link chuyến đi! 🔗')).catch(() => prompt('Link:', link));
+      navigator.clipboard.writeText(link)
+        .then(() => showToast('Đã copy link chuyến đi.'))
+        .catch(() => showToast('Không copy được. Link: ' + link, { duration: 10000 }));
     }
 
     // ==========================================
@@ -842,10 +955,91 @@
     }
 
     // Guards against typos like "3000" meaning 3 triệu
-    function confirmAmount(amount, min, max, what) {
-      if (amount < min) return confirm(what + ' chỉ ' + formatMoney(amount) + ', đúng không?');
-      if (amount > max) return confirm(what + ' lên tới ' + formatMoney(amount) + ', đúng không?');
-      return true;
+    // Guards against typos like "3000" meaning 3 triệu
+    async function confirmAmount(amount, min, max, what) {
+      let message = null;
+      if (amount < min) message = what + ' chỉ ' + formatMoney(amount) + '.';
+      else if (amount > max) message = what + ' lên tới ' + formatMoney(amount) + '.';
+      if (!message) return true;
+      return !!(await openDialog({ title: 'Kiểm tra lại số tiền', message: message + ' Số này đúng chưa?', okText: 'Đúng, lưu', cancelText: 'Sửa lại' }));
+    }
+
+    const TRASH_ICON = '<svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+
+    // Non-blocking message; actionText/onAction adds a button such as "Hoàn tác"
+    function showToast(message, { type = 'info', actionText, onAction, duration = 4000 } = {}) {
+      const toast = document.createElement('div');
+      toast.className = 'toast toast-' + type;
+      const text = document.createElement('span');
+      text.textContent = message;
+      toast.appendChild(text);
+      let timer;
+      const close = () => { clearTimeout(timer); toast.remove(); };
+      if (actionText) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'toast-action';
+        btn.textContent = actionText;
+        btn.onclick = () => { close(); onAction(); };
+        toast.appendChild(btn);
+      }
+      document.getElementById('toastContainer').appendChild(toast);
+      timer = setTimeout(close, actionText ? Math.max(duration, 6000) : duration);
+    }
+
+    // Promise-based replacement for prompt/confirm. Resolves with field values, {} for a plain confirm, or null on cancel
+    function openDialog({ title, message = '', fields = [], okText = 'Lưu', cancelText = 'Hủy', danger = false, validate }) {
+      return new Promise(resolve => {
+        const dlg = document.getElementById('appDialog');
+        const form = document.getElementById('dlgForm');
+        const err = document.getElementById('dlgError');
+        const ok = document.getElementById('dlgOk');
+        const cancel = document.getElementById('dlgCancel');
+        const box = document.getElementById('dlgFields');
+        document.getElementById('dlgTitle').textContent = title;
+        const msg = document.getElementById('dlgMessage');
+        msg.textContent = message;
+        msg.hidden = !message;
+        err.textContent = '';
+        box.innerHTML = fields.map(f => `
+          <label class="dialog-field">${esc(f.label)}
+            <input class="form-input" id="dlgField_${f.id}" value="${esc(f.value ?? '')}" ${f.money ? 'inputmode="numeric"' : ''} aria-describedby="dlgError">
+          </label>`).join('');
+        fields.forEach(f => { if (f.money) formatCurrencyInput(document.getElementById('dlgField_' + f.id)); });
+        ok.textContent = okText;
+        ok.className = 'btn ' + (danger ? 'btn-danger' : 'btn-primary');
+        cancel.textContent = cancelText;
+
+        const finish = (result) => {
+          form.onsubmit = null;
+          cancel.onclick = null;
+          dlg.oncancel = null;
+          dlg.close();
+          resolve(result);
+        };
+        form.onsubmit = (e) => {
+          e.preventDefault();
+          const values = Object.fromEntries(fields.map(f => [f.id, document.getElementById('dlgField_' + f.id).value]));
+          const problem = validate ? validate(values) : null;
+          if (problem) { err.textContent = problem; return; }
+          finish(values);
+        };
+        cancel.onclick = () => finish(null);
+        dlg.oncancel = (e) => { e.preventDefault(); finish(null); };
+        dlg.showModal();
+        const first = box.querySelector('input');
+        if (first) { first.focus(); first.select(); } else { ok.focus(); }
+      });
+    }
+
+    function setSaveStatus(status) {
+      const el = document.getElementById('saveStatus');
+      el.dataset.status = status;
+      if (status === 'error') {
+        el.innerHTML = 'Lỗi lưu · <button type="button" class="link-btn" onclick="save()">Thử lại</button>';
+      } else {
+        el.textContent = status === 'saving' ? 'Đang lưu…' : 'Đã lưu';
+      }
     }
 
     function esc(str) {
@@ -863,7 +1057,7 @@
     // silent: used when adding many names at once, caller reports the summary
     function addMemberWithName(name, silent = false) {
       if (state.members.some(m => m.name.toLowerCase() === name.toLowerCase())) {
-        if (!silent) alert('Tên "' + name + '" đã tồn tại!');
+        if (!silent) showToast('Tên "' + name + '" đã có trong danh sách.', { type: 'error' });
         return false;
       }
       state.members.push({ id: 'member_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7), name, paid: true, contributed: null });
@@ -881,22 +1075,27 @@
     function addMember() {
       const input = document.getElementById('txtMemberName');
       const names = input.value.split(/[,;\n]+/).map(n => n.trim()).filter(Boolean);
-      if (names.length === 0) { alert('Vui lòng nhập tên thành viên!'); return; }
+      if (names.length === 0) { showToast('Nhập tên thành viên.', { type: 'error' }); input.focus(); return; }
       if (names.length === 1) {
         if (addMemberWithName(names[0])) input.value = '';
       } else {
         const { added, skipped } = addNames(names);
-        if (skipped) alert('Đã thêm ' + added + ' người, bỏ qua ' + skipped + ' tên trùng.');
+        showToast('Đã thêm ' + added + ' người' + (skipped ? ', bỏ qua ' + skipped + ' tên trùng.' : '.'));
         input.value = '';
       }
       input.focus();
     }
 
-    function updateFundPerPerson(value) {
+    async function updateFundPerPerson(value) {
+      const input = document.getElementById('txtFundPerPerson');
       const amount = parseMoney(value);
-      if (!amount) { alert('Mức góp phải lớn hơn 0!'); render(); return; }
-      if (!confirmAmount(amount, 100000, 100000000, 'Mức góp mỗi người')) {
-        document.getElementById('txtFundPerPerson').value = state.fundPerPerson.toLocaleString('vi-VN');
+      if (!amount) {
+        showToast('Mức góp phải lớn hơn 0.', { type: 'error' });
+        input.value = state.fundPerPerson.toLocaleString('vi-VN');
+        return;
+      }
+      if (!(await confirmAmount(amount, 100000, 100000000, 'Mức góp mỗi người'))) {
+        input.value = state.fundPerPerson.toLocaleString('vi-VN');
         return;
       }
       state.fundPerPerson = amount;
@@ -914,16 +1113,22 @@
       render();
     }
 
-    function editContribution(id) {
+    async function editContribution(id) {
       const m = state.members.find(x => x.id === id);
       if (!m) return;
-      const current = m.contributed ?? state.fundPerPerson;
-      const value = prompt('Số tiền ' + m.name + ' góp (mức chung: ' + formatMoney(state.fundPerPerson) + '):', current.toLocaleString('vi-VN'));
-      if (value === null) return;
-      const amount = parseMoney(value);
-      if (!amount) { alert('Số tiền góp phải lớn hơn 0!'); return; }
-      if (!confirmAmount(amount, 100000, 100000000, 'Tiền góp của ' + m.name)) return;
-      m.contributed = amount === state.fundPerPerson ? null : amount;
+      const values = await openDialog({
+        title: 'Tiền góp của ' + m.name,
+        message: 'Mức chung là ' + formatMoney(state.fundPerPerson) + '. Nhập số khác nếu người này góp khác.',
+        fields: [{ id: 'amount', label: 'Số tiền góp', value: (m.contributed ?? state.fundPerPerson).toLocaleString('vi-VN'), money: true }],
+        validate: v => parseMoney(v.amount) > 0 ? null : 'Số tiền góp phải lớn hơn 0.'
+      });
+      if (!values) return;
+      const amount = parseMoney(values.amount);
+      if (!(await confirmAmount(amount, 100000, 100000000, 'Tiền góp của ' + m.name))) return;
+      // A realtime update may have replaced state while the dialog was open
+      const target = state.members.find(x => x.id === id);
+      if (!target) { showToast(m.name + ' vừa bị người khác xóa.', { type: 'error' }); return; }
+      target.contributed = amount === state.fundPerPerson ? null : amount;
       save();
       render();
     }
@@ -937,15 +1142,26 @@
         : available.slice(0, 6).map(name => `<button class="preset-chip" onclick="addMemberWithName('${name}')">+ ${name}</button>`).join('');
     }
 
+    // Delete right away and offer Undo instead of a blocking confirm
     function deleteMember(id) {
       if (state.expenses.some(e => e.paidBy === id || e.forMember === id)) {
-        alert('Người này còn khoản chi liên quan. Xóa các khoản đó trước.');
+        showToast('Không xóa được: ' + memberName(id) + ' còn món riêng. Xóa các món đó trước.', { type: 'error' });
         return;
       }
-      if (!confirm('Xóa ' + memberName(id) + '?')) return;
-      state.members = state.members.filter(m => m.id !== id);
+      const index = state.members.findIndex(m => m.id === id);
+      if (index < 0) return;
+      const [removed] = state.members.splice(index, 1);
       save();
       render();
+      showToast('Đã xóa ' + removed.name + '.', {
+        actionText: 'Hoàn tác',
+        onAction: () => {
+          if (state.members.some(m => m.id === removed.id)) return;
+          state.members.splice(Math.min(index, state.members.length), 0, removed);
+          save();
+          render();
+        }
+      });
     }
 
     let expenseTab = 'shared'; // local UI state, not synced
@@ -976,20 +1192,23 @@
         : '+ Thêm món riêng';
     }
 
-    function addPersonalExpenses() {
+    async function addPersonalExpenses() {
       const name = document.getElementById('txtPersonalName').value.trim() || 'Món riêng';
-      const items = personalInputs()
-        .map(i => ({ input: i, amount: parseMoney(i.value) }))
+      let items = personalInputs()
+        .map(i => ({ memberId: i.dataset.memberId, amount: parseMoney(i.value) }))
         .filter(x => x.amount > 0);
-      if (items.length === 0) { alert('Nhập số tiền cho ít nhất 1 người!'); return; }
-      const biggest = Math.max(...items.map(x => x.amount));
-      if (!confirmAmount(biggest, 0, 50000000, 'Có món')) return;
+      if (items.length === 0) { showToast('Nhập số tiền cho ít nhất 1 người.', { type: 'error' }); return; }
+      if (!(await confirmAmount(Math.max(...items.map(x => x.amount)), 0, 50000000, 'Có món'))) return;
+      items = items.filter(x => state.members.some(m => m.id === x.memberId));
+      // One batchId per round so the list can show it as a single row
+      const batchId = 'batch_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
       items.forEach(x => {
-        state.expenses.push({ id: newExpenseId(), name, amount: x.amount, paidBy: 'fund', forMember: x.input.dataset.memberId });
-        x.input.value = '';
+        state.expenses.push({ id: newExpenseId(), name, amount: x.amount, paidBy: 'fund', forMember: x.memberId, batchId });
       });
+      personalInputs().forEach(i => { if (items.some(x => x.memberId === i.dataset.memberId)) i.value = ''; });
       save();
       render();
+      showToast('Đã thêm ' + name + ': ' + items.length + ' món, ' + formatMoney(items.reduce((sum, x) => sum + x.amount, 0)) + '.');
     }
 
     // Keeps half-typed amounts when a realtime update re-renders the list
@@ -1023,31 +1242,87 @@
       updatePersonalSummary();
     }
 
-    function addExpense() {
+    async function addExpense() {
       const txtName = document.getElementById('txtExpName');
       const txtAmount = document.getElementById('txtExpAmount');
       const amount = parseMoney(txtAmount.value);
-      if (!amount) { alert('Nhập số tiền!'); txtAmount.focus(); return; }
-      if (state.members.length === 0) { alert('Thêm thành viên trước!'); return; }
-      if (!confirmAmount(amount, 0, 50000000, 'Khoản chi')) { txtAmount.focus(); return; }
-      state.expenses.push({
-        id: newExpenseId(),
-        name: txtName.value.trim() || 'Khoản chi',
-        amount,
-        paidBy: 'fund',
-        forMember: null
-      });
+      if (!amount) { showToast('Nhập số tiền.', { type: 'error' }); txtAmount.focus(); return; }
+      if (state.members.length === 0) { showToast('Thêm thành viên trước.', { type: 'error' }); return; }
+      if (!(await confirmAmount(amount, 0, 50000000, 'Khoản chi'))) { txtAmount.focus(); return; }
+      const name = txtName.value.trim() || 'Khoản chi';
+      state.expenses.push({ id: newExpenseId(), name, amount, paidBy: 'fund', forMember: null });
+      txtName.value = '';
       txtAmount.value = '';
-      // Keep the name so several drinks can be entered back to back
-      txtAmount.focus();
+      txtName.focus();
       save();
       render();
+      showToast('Đã thêm ' + name + ': ' + formatMoney(amount) + ', chia đều.');
+    }
+
+    // Removes now, Undo puts every item back at its old position
+    function removeExpensesWithUndo(ids, label) {
+      const removed = [];
+      state.expenses.forEach((e, index) => { if (ids.includes(e.id)) removed.push({ index, e }); });
+      if (removed.length === 0) return;
+      state.expenses = state.expenses.filter(e => !ids.includes(e.id));
+      save();
+      render();
+      showToast('Đã xóa ' + label + '.', {
+        actionText: 'Hoàn tác',
+        onAction: () => {
+          removed.forEach(({ index, e }) => {
+            if (!state.expenses.some(x => x.id === e.id)) state.expenses.splice(Math.min(index, state.expenses.length), 0, e);
+          });
+          save();
+          render();
+        }
+      });
     }
 
     function deleteExpense(id) {
-      state.expenses = state.expenses.filter(e => e.id !== id);
+      const e = state.expenses.find(x => x.id === id);
+      if (!e) return;
+      removeExpensesWithUndo([id], e.name + ' ' + formatMoney(e.amount) + (e.forMember ? ' của ' + memberName(e.forMember) : ''));
+    }
+
+    async function deleteBatch(batchId) {
+      const items = state.expenses.filter(e => e.batchId === batchId);
+      if (items.length === 0) return;
+      const total = items.reduce((sum, e) => sum + e.amount, 0);
+      const ok = await openDialog({
+        title: 'Xóa cả lượt ' + items[0].name + '?',
+        message: items.length + ' món, tổng ' + formatMoney(total) + '. Có thể hoàn tác ngay sau khi xóa.',
+        okText: 'Xóa cả lượt',
+        danger: true
+      });
+      if (!ok) return;
+      removeExpensesWithUndo(items.map(e => e.id), 'lượt ' + items[0].name);
+    }
+
+    async function editExpense(id) {
+      const e = state.expenses.find(x => x.id === id);
+      if (!e) return;
+      // Items in a round keep the round's name, only their price is edited
+      const inBatch = !!e.batchId;
+      const fields = inBatch ? [] : [{ id: 'name', label: 'Tên khoản', value: e.name }];
+      fields.push({ id: 'amount', label: 'Số tiền', value: e.amount.toLocaleString('vi-VN'), money: true });
+      const values = await openDialog({
+        title: inBatch ? 'Sửa giá ' + e.name + ' của ' + memberName(e.forMember) : 'Sửa khoản chi',
+        message: !inBatch && e.forMember ? 'Món riêng của ' + memberName(e.forMember) + '.' : '',
+        fields,
+        validate: v => parseMoney(v.amount) > 0 ? null : 'Số tiền phải lớn hơn 0.'
+      });
+      if (!values) return;
+      const amount = parseMoney(values.amount);
+      if (!(await confirmAmount(amount, 0, 50000000, 'Khoản chi'))) return;
+      // A realtime update may have replaced state while the dialog was open
+      const target = state.expenses.find(x => x.id === id);
+      if (!target) { showToast('Khoản này vừa bị người khác xóa.', { type: 'error' }); return; }
+      if (!inBatch) target.name = values.name.trim() || target.name;
+      target.amount = amount;
       save();
       render();
+      showToast('Đã lưu thay đổi.');
     }
 
     function copyReport() {
@@ -1061,7 +1336,7 @@
         const verdict = x.balance >= 0 ? 'nhận lại ' + formatMoney(x.balance) : 'nộp thêm ' + formatMoney(-x.balance);
         lines.push('• ' + x.name + ': chịu ' + formatMoney(x.share) + ' → ' + verdict);
       });
-      navigator.clipboard.writeText(lines.join('\n')).then(() => alert('Đã copy bảng kê!')).catch(() => prompt('Bảng kê:', lines.join('\n')));
+      navigator.clipboard.writeText(lines.join('\n')).then(() => showToast('Đã copy bảng kê.')).catch(() => showToast('Không copy được bảng kê. Hãy dùng "Xuất ảnh".', { type: 'error' }));
     }
 
     // ==========================================
@@ -1094,7 +1369,7 @@
     }
 
     async function exportImage() {
-      if (state.members.length === 0) { alert('Chưa có thành viên để xuất ảnh!'); return; }
+      if (state.members.length === 0) { showToast('Chưa có thành viên để xuất ảnh.', { type: 'error' }); return; }
       if (document.fonts && document.fonts.ready) await document.fonts.ready;
 
       const r = computeBalances(state);
@@ -1249,6 +1524,63 @@
     }
 
     // ==========================================
+    // EXPENSE LIST
+    // ==========================================
+    function expenseRow(e, title, sub) {
+      return `
+          <div class="row-item">
+            <button class="row-main" onclick="editExpense('${e.id}')" aria-label="Sửa ${esc(title)}, ${formatMoney(e.amount)}">
+              <span class="row-title">${esc(title)} · <b>${formatMoney(e.amount)}</b></span>
+              ${sub ? `<span class="row-sub">${sub}</span>` : ''}
+            </button>
+            <button class="action-btn-mini delete-btn" onclick="deleteExpense('${e.id}')" title="Xóa" aria-label="Xóa ${esc(title)}">${TRASH_ICON}</button>
+          </div>`;
+    }
+
+    // Rounds from "Tính riêng" share a batchId and render as one expandable row
+    function renderExpenseList() {
+      const list = document.getElementById('expenseList');
+      const openBatches = new Set([...list.querySelectorAll('details[open]')].map(d => d.dataset.batch));
+      if (state.expenses.length === 0) {
+        list.innerHTML = '<div class="empty">Chưa có khoản chi nào.</div>';
+        return;
+      }
+      const seen = new Set();
+      const entries = [];
+      state.expenses.slice().reverse().forEach(e => {
+        if (!e.batchId) { entries.push({ single: e }); return; }
+        if (seen.has(e.batchId)) return;
+        seen.add(e.batchId);
+        entries.push({ batchId: e.batchId, items: state.expenses.filter(x => x.batchId === e.batchId) });
+      });
+      list.innerHTML = entries.map(entry => {
+        if (entry.single) {
+          const e = entry.single;
+          const sub = (e.forMember ? 'riêng ' + esc(memberName(e.forMember)) : 'chia đều')
+            + (e.paidBy !== 'fund' ? ' · ' + esc(memberName(e.paidBy)) + ' tự trả' : '');
+          return expenseRow(e, e.name, sub);
+        }
+        const { batchId, items } = entry;
+        const total = items.reduce((sum, e) => sum + e.amount, 0);
+        const names = items.map(e => esc(memberName(e.forMember))).join(', ');
+        return `
+          <details class="expense-group" data-batch="${batchId}" ${openBatches.has(batchId) ? 'open' : ''}>
+            <summary class="row-item">
+              <span class="row-main-static">
+                <span class="row-title">${esc(items[0].name)} · <b>${formatMoney(total)}</b></span>
+                <span class="row-sub clamp">${items.length} món riêng · ${names}</span>
+              </span>
+              <span class="row-sub group-toggle">Chi tiết</span>
+            </summary>
+            <div class="group-items">
+              ${items.map(e => expenseRow(e, memberName(e.forMember), '')).join('')}
+              <button class="btn btn-danger btn-sm" onclick="deleteBatch('${batchId}')">${TRASH_ICON} Xóa cả lượt</button>
+            </div>
+          </details>`;
+      }).join('');
+    }
+
+    // ==========================================
     // RENDER
     // ==========================================
     function render() {
@@ -1301,17 +1633,7 @@
             </div>
           </div>`).join('');
 
-      // Expenses (newest first)
-      document.getElementById('expenseList').innerHTML = state.expenses.length === 0
-        ? '<div class="empty">Chưa có khoản chi nào.</div>'
-        : state.expenses.slice().reverse().map(e => `
-          <div class="row-item">
-            <div>
-              <div>${esc(e.name)} · <b>${formatMoney(e.amount)}</b></div>
-              <div class="row-sub">${e.forMember ? 'riêng ' + esc(memberName(e.forMember)) : 'chia đều'}${e.paidBy !== 'fund' ? ' · ' + esc(memberName(e.paidBy)) + ' tự trả' : ''}</div>
-            </div>
-            <button class="btn-mini" onclick="deleteExpense('${e.id}')" title="Xóa" aria-label="Xóa khoản ${esc(e.name)}">✕</button>
-          </div>`).join('');
+      renderExpenseList();
     }
   </script>
 </body>
